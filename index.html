@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>किसान फॉर्म · आधार विकल्प सहित</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Nirmala UI', 'Hindi', system-ui, sans-serif;
+        }
+        body {
+            background: #def1d8;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        .form-container {
+            max-width: 950px;
+            width: 100%;
+            background: white;
+            padding: 2rem 2rem 2.5rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -8px #1f4a2b;
+            border: 1px solid #b8dcb0;
+        }
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #1c5227;
+            margin: 0 0 0.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h1::before {
+            content: "🌾🚜";
+            font-size: 2.2rem;
+        }
+        .subhead {
+            color: #1f6e44;
+            border-left: 5px solid #5b8c5a;
+            padding-left: 1.2rem;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+        fieldset {
+            border: 1px solid #b6d9ac;
+            border-radius: 28px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            background: #f8fff6;
+        }
+        legend {
+            background: #236b3e;
+            color: white;
+            padding: 0.4rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1.3rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,40,0,0.2);
+        }
+        .section-label {
+            font-weight: 600;
+            color: #1e422a;
+            font-size: 1.2rem;
+            margin: 0 0 1rem 0;
+            border-bottom: 2px dotted #a6cf9e;
+            padding-bottom: 0.3rem;
+        }
+        .checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
+            margin-bottom: 1.2rem;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 160px;
+            background: #ecfbea;
+            padding: 0.4rem 1rem 0.4rem 0.8rem;
+            border-radius: 40px;
+            border: 1px solid #a9d2a1;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: #1e7e4a;
+            margin-right: 0.2rem;
+        }
+        .other-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        .other-row input[type="text"] {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #98ba90;
+            border-radius: 40px;
+            font-size: 1rem;
+            width: 280px;
+            max-width: 100%;
+            background: white;
+        }
+        .other-row input[type="text"]:focus {
+            border-color: #1d7a41;
+            outline: 2px solid #b1e0b9;
+        }
+        .inline-hint {
+            color: #1d5730;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 1rem 0 0.4rem;
+        }
+        .radio-group {
+            margin: 0.8rem 0 1rem 0;
+        }
+        .radio-option {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 2.2rem;
+            background: #e9f3e6;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 1.05rem;
+        }
+        .radio-option input[type="radio"] {
+            margin-right: 0.5rem;
+            accent-color: #1d7a41;
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+        .help-type-group {
+            background: #e1f5e1;
+            padding: 1.2rem 1.8rem;
+            border-radius: 32px;
+            margin: 0.5rem 0 0.5rem 1.2rem;
+            border-left: 5px solid #328f4e;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2.5rem;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            background: #1f7a4c;
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px #236b3e;
+            border: 1px solid #166b3b;
+            letter-spacing: 1px;
+        }
+        .button:hover {
+            background: #0e5a32;
+            transform: scale(1.01);
+        }
+        .note {
+            text-align: center;
+            color: #3d6e47;
+            margin-top: 1.2rem;
+            font-size: 0.95rem;
+        }
+        hr {
+            border: 1px solid #c4e0be;
+            margin: 1.2rem 0;
+        }
+        .challenge-box {
+            background: #fff5e6;
+            border-radius: 28px;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid #e0cdaa;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1>किसान सहायता डेटाबेस</h1>
+    <div class="subhead">बिहार के किसानों के लिए · आधार विकल्प अब शामिल</div>
+
+    <form id="farmerForm">
+        <!-- ========== पहचान (Farmer ID / Aadhaar) ========= -->
+        <fieldset>
+            <legend>🆔 किसान पहचान</legend>
+            <div class="section-label">क्या किसान के पास आधिकारिक किसान आईडी है?</div>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="has_id" value="yes" id="has_id_yes"> हाँ, किसान आईडी है</label>
+                <label class="radio-option"><input type="radio" name="has_id" value="no" id="has_id_no" checked> नहीं, आधार नंबर दें</label>
+            </div>
+            <!-- किसान आईडी (यदि हाँ) -->
+            <div id="farmer_id_block" class="other-row hidden">
+                <label for="farmer_id">किसान आईडी (अगर उपलब्ध हो):</label>
+                <input type="text" id="farmer_id" name="farmer_id" class="text-input" placeholder="उदा. BR12345">
+            </div>
+            <!-- आधार नंबर (यदि नहीं) -->
+            <div id="aadhaar_block" class="other-row">
+                <label for="aadhaar_no">आधार नंबर (अगर किसान आईडी नहीं है):</label>
+                <input type="text" id="aadhaar_no" name="aadhaar_no" class="text-input" placeholder="12 अंकों का आधार नंबर">
+            </div>
+        </fieldset>
+
+        <!-- ========== खेती के प्रकार ========= -->
+        <fieldset>
+            <legend>🌱 खेती के प्रकार</legend>
+            <div class="section-label">▶ किस प्रकार की खेती करते हैं? (एक या अधिक)</div>
+            <div class="checkbox-grid" id="farmingCheckboxGroup">
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="धान (paddy)"> धान (paddy)</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="गेहूँ (wheat)"> गेहूँ (wheat)</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="मक्का (maize)"> मक्का (maize)</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="सब्जियाँ (vegetables)"> सब्जियाँ</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="दालें (pulses)"> दालें (मसूर, चना)</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="गन्ना (sugarcane)"> गन्ना</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="आलू (potato)"> आलू</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="तिलहन (oilseeds)"> तिलहन (सरसों)</label>
+                <label class="checkbox-item"><input type="checkbox" name="farming_type[]" value="फल (fruits)"> फल (आम, लीची)</label>
+                <label class="checkbox-item"><input type="checkbox" id="farming_other_check" value="अन्य"> अन्य (Other)</label>
+            </div>
+            <div id="farming_other_row" class="other-row hidden">
+                <label for="farming_other_text">कृपया अन्य खेती बताएँ:</label>
+                <input type="text" id="farming_other_text" name="farming_other" placeholder="उदा. मछली पालन">
+            </div>
+
+            <div class="inline-hint">🤔 क्या खेती के लिए मदद चाहिए?</div>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="help_farming" value="yes" id="help_farming_yes"> हाँ</label>
+                <label class="radio-option"><input type="radio" name="help_farming" value="no" id="help_farming_no" checked> नहीं</label>
+            </div>
+            <div id="farming_help_type" class="help-type-group hidden">
+                <label class="radio-option"><input type="radio" name="help_farming_type" value="training"> 👨‍🌾 प्रशिक्षण / जानकारी</label>
+                <label class="radio-option"><input type="radio" name="help_farming_type" value="equipment"> 🚜 उपकरण उपलब्ध कराना</label>
+            </div>
+        </fieldset>
+
+        <!-- ========== उर्वरक / खाद ========= -->
+        <fieldset>
+            <legend>🧪 उर्वरक एवं खाद</legend>
+            <div class="section-label">▶ कौन सी खाद / उर्वरक इस्तेमाल करते हैं?</div>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="यूरिया (urea)"> यूरिया</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="डीएपी (DAP)"> डीएपी</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="पोटाश (potash)"> पोटाश</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="एनपीके (NPK)"> एनपीके</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="सिंगल सुपर फॉस्फेट (SSP)"> सिंगल सुपर फॉस्फेट</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="जिंक सल्फेट"> जिंक सल्फेट</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="गोबर की खाद (compost)"> गोबर की खाद</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="वर्मी कम्पोस्ट"> वर्मी कम्पोस्ट</label>
+                <label class="checkbox-item"><input type="checkbox" name="fertilizer_type[]" value="हरी खाद (green manure)"> हरी खाद</label>
+                <label class="checkbox-item"><input type="checkbox" id="fertilizer_other_check" value="अन्य"> अन्य</label>
+            </div>
+            <div id="fertilizer_other_row" class="other-row hidden">
+                <label for="fertilizer_other_text">अन्य उर्वरक/खाद का नाम:</label>
+                <input type="text" id="fertilizer_other_text" name="fertilizer_other" placeholder="उदा. नीम खली">
+            </div>
+
+            <div class="inline-hint">🤔 क्या उर्वरक/खाद के लिए मदद चाहिए?</div>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="help_fertilizer" value="yes" id="help_fertilizer_yes"> हाँ</label>
+                <label class="radio-option"><input type="radio" name="help_fertilizer" value="no" id="help_fertilizer_no" checked> नहीं</label>
+            </div>
+            <div id="fertilizer_help_type" class="help-type-group hidden">
+                <label class="radio-option"><input type="radio" name="help_fertilizer_type" value="training"> 📘 प्रशिक्षण (सही मात्रा/प्रयोग)</label>
+                <label class="radio-option"><input type="radio" name="help_fertilizer_type" value="equipment"> ⚙️ उपकरण / खाद छिड़काव यंत्र</label>
+            </div>
+        </fieldset>
+
+        <!-- ========== कृषि उपकरण ========= -->
+        <fieldset>
+            <legend>🚜 कृषि उपकरण</legend>
+            <div class="section-label">▶ कौन से उपकरण उपयोग करते हैं?</div>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="ट्रैक्टर (tractor)"> ट्रैक्टर</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="कल्टीवेटर (cultivator)"> कल्टीवेटर</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="रोटावेटर (rotavator)"> रोटावेटर</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="सीड ड्रिल (seed drill)"> सीड ड्रिल</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="स्प्रेयर (sprayer)"> स्प्रेयर (कीटनाशक छिड़काव)</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="थ्रेशर (thresher)"> थ्रेशर (गहाई मशीन)</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="हार्वेस्टर (harvester)"> हार्वेस्टर</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="पम्प सेट (pump set)"> पम्प सेट</label>
+                <label class="checkbox-item"><input type="checkbox" name="equipment_used[]" value="ड्रिप इरिगेशन (drip)"> ड्रिप सिंचाई</label>
+                <label class="checkbox-item"><input type="checkbox" id="equipment_other_check" value="अन्य"> अन्य</label>
+            </div>
+            <div id="equipment_other_row" class="other-row hidden">
+                <label for="equipment_other_text">अन्य उपकरण बताएँ:</label>
+                <input type="text" id="equipment_other_text" name="equipment_other" placeholder="उदा. पॉवर टिलर">
+            </div>
+
+            <div class="inline-hint">🤔 क्या उपकरणों से जुड़ी मदद चाहिए?</div>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="help_equipment" value="yes" id="help_equipment_yes"> हाँ</label>
+                <label class="radio-option"><input type="radio" name="help_equipment" value="no" id="help_equipment_no" checked> नहीं</label>
+            </div>
+            <div id="equipment_help_type" class="help-type-group hidden">
+                <label class="radio-option"><input type="radio" name="help_equipment_type" value="training"> 🛠️ संचालन प्रशिक्षण</label>
+                <label class="radio-option"><input type="radio" name="help_equipment_type" value="equipment"> 🚜 उपकरण दिलवाने में मदद</label>
+            </div>
+        </fieldset>
+
+        <!-- ========== चुनौतियाँ ========= -->
+        <fieldset class="challenge-box">
+            <legend>⚠️ वर्तमान चुनौतियाँ</legend>
+            <div class="section-label">▶ किसान को किन समस्याओं का सामना है? (एक या अधिक चुनें)</div>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="पानी की कमी"> 💧 पानी की कमी</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="कीट एवं रोग"> 🐛 कीट एवं रोग</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उर्वरक की कमी/महंगाई"> 🧪 उर्वरक की कमी / महंगाई</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="फसलों के उचित दाम न मिलना"> 💰 फसलों के उचित दाम न मिलना</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="मौसम की मार (बाढ़/सूखा)"> 🌧️ मौसम की मार (बाढ़/सूखा)</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="कर्ज का बोझ"> 📉 कर्ज का बोझ</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="जानकारी/प्रशिक्षण का अभाव"> 📚 जानकारी/प्रशिक्षण का अभाव</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उपकरणों की कमी"> 🔧 उपकरणों की कमी</label>
+                <label class="checkbox-item"><input type="checkbox" id="challenge_other_check" value="अन्य"> अन्य समस्या</label>
+            </div>
+            <div id="challenge_other_row" class="other-row hidden">
+                <label for="challenge_other_text">कृपया अन्य समस्या बताएँ:</label>
+                <input type="text" id="challenge_other_text" name="challenge_other" placeholder="जैसे बीज की अनुपलब्धता">
+            </div>
+        </fieldset>
+
+        <hr>
+        <button type="button" class="button" id="submitForm">📋 किसान की जानकारी देखें (सारांश)</button>
+        <div class="note">सभी विकल्प गतिशील हैं — मदद वाले भाग तभी दिखते हैं जब "हाँ" चुनें।</div>
+    </form>
+</div>
+
+<script>
+    (function(){
+        // ----- पहचान टॉगल (Farmer ID vs Aadhaar) -----
+        const hasIdYes = document.getElementById('has_id_yes');
+        const hasIdNo = document.getElementById('has_id_no');
+        const farmerIdBlock = document.getElementById('farmer_id_block');
+        const aadhaarBlock = document.getElementById('aadhaar_block');
+
+        function toggleIdAadhaar() {
+            if (hasIdYes.checked) {
+                farmerIdBlock.classList.remove('hidden');
+                aadhaarBlock.classList.add('hidden');
+                // clear aadhaar field when hidden
+                document.getElementById('aadhaar_no').value = '';
+            } else {
+                farmerIdBlock.classList.add('hidden');
+                aadhaarBlock.classList.remove('hidden');
+                // clear farmer id field when hidden
+                document.getElementById('farmer_id').value = '';
+            }
+        }
+
+        hasIdYes.addEventListener('change', toggleIdAadhaar);
+        hasIdNo.addEventListener('change', toggleIdAadhaar);
+
+        // initial state: "no" is checked, so aadhaar visible, farmer hidden
+        toggleIdAadhaar();
+
+        // ----- सहायता टॉगल (help yes/no) -----
+        const farmingHelpYes = document.getElementById('help_farming_yes');
+        const farmingHelpNo = document.getElementById('help_farming_no');
+        const farmingHelpType = document.getElementById('farming_help_type');
+
+        const fertHelpYes = document.getElementById('help_fertilizer_yes');
+        const fertHelpNo = document.getElementById('help_fertilizer_no');
+        const fertHelpType = document.getElementById('fertilizer_help_type');
+
+        const equipHelpYes = document.getElementById('help_equipment_yes');
+        const equipHelpNo = document.getElementById('help_equipment_no');
+        const equipHelpType = document.getElementById('equipment_help_type');
+
+        function toggleFarmingHelp() { farmingHelpType.classList.toggle('hidden', !farmingHelpYes.checked); }
+        function toggleFertHelp() { fertHelpType.classList.toggle('hidden', !fertHelpYes.checked); }
+        function toggleEquipHelp() { equipHelpType.classList.toggle('hidden', !equipHelpYes.checked); }
+
+        farmingHelpYes.addEventListener('change', toggleFarmingHelp);
+        farmingHelpNo.addEventListener('change', toggleFarmingHelp);
+        fertHelpYes.addEventListener('change', toggleFertHelp);
+        fertHelpNo.addEventListener('change', toggleFertHelp);
+        equipHelpYes.addEventListener('change', toggleEquipHelp);
+        equipHelpNo.addEventListener('change', toggleEquipHelp);
+
+        // आरंभिक स्थिति (सभी help no checked)
+        farmingHelpType.classList.add('hidden');
+        fertHelpType.classList.add('hidden');
+        equipHelpType.classList.add('hidden');
+
+        // ----- अन्य (other) फील्ड टॉगल: खेती, उर्वरक, उपकरण, चुनौती -----
+        const farmingOtherCheck = document.getElementById('farming_other_check');
+        const farmingOtherRow = document.getElementById('farming_other_row');
+        const fertilizerOtherCheck = document.getElementById('fertilizer_other_check');
+        const fertilizerOtherRow = document.getElementById('fertilizer_other_row');
+        const equipOtherCheck = document.getElementById('equipment_other_check');
+        const equipOtherRow = document.getElementById('equipment_other_row');
+        const challengeOtherCheck = document.getElementById('challenge_other_check');
+        const challengeOtherRow = document.getElementById('challenge_other_row');
+
+        function toggleOther(checkbox, row) {
+            row.classList.toggle('hidden', !checkbox.checked);
+            if (!checkbox.checked) {
+                const textInput = row.querySelector('input[type="text"]');
+                if (textInput) textInput.value = '';
+            }
+        }
+
+        farmingOtherCheck.addEventListener('change', () => toggleOther(farmingOtherCheck, farmingOtherRow));
+        fertilizerOtherCheck.addEventListener('change', () => toggleOther(fertilizerOtherCheck, fertilizerOtherRow));
+        equipOtherCheck.addEventListener('change', () => toggleOther(equipOtherCheck, equipOtherRow));
+        challengeOtherCheck.addEventListener('change', () => toggleOther(challengeOtherCheck, challengeOtherRow));
+
+        // आरंभ में सभी other row छुपे हों
+        farmingOtherRow.classList.add('hidden');
+        fertilizerOtherRow.classList.add('hidden');
+        equipOtherRow.classList.add('hidden');
+        challengeOtherRow.classList.add('hidden');
+
+        // ----- सबमिट बटन: सारांश संग्रह -----
+        document.getElementById('submitForm').addEventListener('click', function() {
+            const data = {};
+
+            // पहचान (आईडी या आधार)
+            if (hasIdYes.checked) {
+                data.farmerHasID = 'हाँ';
+                data.farmerID = document.getElementById('farmer_id').value.trim() || '(खाली)';
+            } else {
+                data.farmerHasID = 'नहीं (आधार)';
+                data.aadhaarNo = document.getElementById('aadhaar_no').value.trim() || '(खाली)';
+            }
+
+            // खेती प्रकार
+            const farmingChecked = [];
+            document.querySelectorAll('input[name="farming_type[]"]:checked').forEach(cb => farmingChecked.push(cb.value));
+            if (farmingOtherCheck.checked) {
+                const otherVal = document.getElementById('farming_other_text').value.trim();
+                if (otherVal) farmingChecked.push('अन्य: ' + otherVal);
+            }
+            data.farmingType = farmingChecked.length ? farmingChecked : ['कोई नहीं चुना'];
+
+            data.helpFarming = farmingHelpYes.checked ? 'हाँ' : 'नहीं';
+            if (farmingHelpYes.checked) {
+                const helpType = document.querySelector('input[name="help_farming_type"]:checked');
+                data.helpFarmingType = helpType ? (helpType.value === 'training' ? 'प्रशिक्षण' : 'उपकरण') : '(अचयनित)';
+            }
+
+            // उर्वरक
+            const fertChecked = [];
+            document.querySelectorAll('input[name="fertilizer_type[]"]:checked').forEach(cb => fertChecked.push(cb.value));
+            if (fertilizerOtherCheck.checked) {
+                const otherVal = document.getElementById('fertilizer_other_text').value.trim();
+                if (otherVal) fertChecked.push('अन्य: ' + otherVal);
+            }
+            data.fertilizerType = fertChecked.length ? fertChecked : ['कोई नहीं'];
+
+            data.helpFertilizer = fertHelpYes.checked ? 'हाँ' : 'नहीं';
+            if (fertHelpYes.checked) {
+                const helpType = document.querySelector('input[name="help_fertilizer_type"]:checked');
+                data.helpFertilizerType = helpType ? (helpType.value === 'training' ? 'प्रशिक्षण' : 'उपकरण') : '(अचयनित)';
+            }
+
+            // उपकरण
+            const equipChecked = [];
+            document.querySelectorAll('input[name="equipment_used[]"]:checked').forEach(cb => equipChecked.push(cb.value));
+            if (equipOtherCheck.checked) {
+                const otherVal = document.getElementById('equipment_other_text').value.trim();
+                if (otherVal) equipChecked.push('अन्य: ' + otherVal);
+            }
+            data.equipmentUsed = equipChecked.length ? equipChecked : ['कोई नहीं'];
+
+            data.helpEquipment = equipHelpYes.checked ? 'हाँ' : 'नहीं';
+            if (equipHelpYes.checked) {
+                const helpType = document.querySelector('input[name="help_equipment_type"]:checked');
+                data.helpEquipmentType = helpType ? (helpType.value === 'training' ? 'प्रशिक्षण' : 'उपकरण') : '(अचयनित)';
+            }
+
+            // चुनौतियाँ
+            const challenges = [];
+            document.querySelectorAll('input[name="challenges[]"]:checked').forEach(cb => challenges.push(cb.value));
+            if (challengeOtherCheck.checked) {
+                const otherVal = document.getElementById('challenge_other_text').value.trim();
+                if (otherVal) challenges.push('अन्य: ' + otherVal);
+            }
+            data.challenges = challenges.length ? challenges : ['कोई समस्या नहीं बताई'];
+
+            alert('📋 किसान डेटा सारांश:\n\n' + JSON.stringify(data, null, 2));
+            console.log('किसान डेटा:', data);
+        });
+    })();
+</script>
+</body>
+</html>
