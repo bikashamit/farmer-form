@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>किसान फॉर्म · आधार विकल्प सहित</title>
+    <title>किसान फॉर्म · Google Sheets से जुड़ने के लिए तैयार</title>
     <style>
+        /* (all previous styles remain exactly the same) */
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', 'Nirmala UI', 'Hindi', system-ui, sans-serif;
@@ -172,6 +173,11 @@
             background: #0e5a32;
             transform: scale(1.01);
         }
+        .button:disabled {
+            background: #7fa885;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
         .note {
             text-align: center;
             color: #3d6e47;
@@ -188,12 +194,30 @@
             padding: 1.2rem 1.8rem;
             border: 1px solid #e0cdaa;
         }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
 <div class="form-container">
     <h1>किसान सहायता डेटाबेस</h1>
-    <div class="subhead">बिहार के किसानों के लिए · आधार विकल्प अब शामिल</div>
+    <div class="subhead">बिहार के किसानों के लिए · सीधे Google शीट्स में सेव करें</div>
 
     <form id="farmerForm">
         <!-- ========== पहचान (Farmer ID / Aadhaar) ========= -->
@@ -334,8 +358,9 @@
         </fieldset>
 
         <hr>
-        <button type="button" class="button" id="submitForm">📋 किसान की जानकारी देखें (सारांश)</button>
-        <div class="note">सभी विकल्प गतिशील हैं — मदद वाले भाग तभी दिखते हैं जब "हाँ" चुनें।</div>
+        <button type="button" class="button" id="submitForm">📋 किसान जानकारी सबमिट करें</button>
+        <div id="formStatus" class="note"></div>
+        <div class="note">✨ डेटा सीधे Google शीट्स में सेव होगा। बस नीचे दिए निर्देश देखें।</div>
     </form>
 </div>
 
@@ -351,20 +376,16 @@
             if (hasIdYes.checked) {
                 farmerIdBlock.classList.remove('hidden');
                 aadhaarBlock.classList.add('hidden');
-                // clear aadhaar field when hidden
                 document.getElementById('aadhaar_no').value = '';
             } else {
                 farmerIdBlock.classList.add('hidden');
                 aadhaarBlock.classList.remove('hidden');
-                // clear farmer id field when hidden
                 document.getElementById('farmer_id').value = '';
             }
         }
 
         hasIdYes.addEventListener('change', toggleIdAadhaar);
         hasIdNo.addEventListener('change', toggleIdAadhaar);
-
-        // initial state: "no" is checked, so aadhaar visible, farmer hidden
         toggleIdAadhaar();
 
         // ----- सहायता टॉगल (help yes/no) -----
@@ -396,7 +417,7 @@
         fertHelpType.classList.add('hidden');
         equipHelpType.classList.add('hidden');
 
-        // ----- अन्य (other) फील्ड टॉगल: खेती, उर्वरक, उपकरण, चुनौती -----
+        // ----- अन्य (other) फील्ड टॉगल -----
         const farmingOtherCheck = document.getElementById('farming_other_check');
         const farmingOtherRow = document.getElementById('farming_other_row');
         const fertilizerOtherCheck = document.getElementById('fertilizer_other_check');
@@ -419,83 +440,83 @@
         equipOtherCheck.addEventListener('change', () => toggleOther(equipOtherCheck, equipOtherRow));
         challengeOtherCheck.addEventListener('change', () => toggleOther(challengeOtherCheck, challengeOtherRow));
 
-        // आरंभ में सभी other row छुपे हों
         farmingOtherRow.classList.add('hidden');
         fertilizerOtherRow.classList.add('hidden');
         equipOtherRow.classList.add('hidden');
         challengeOtherRow.classList.add('hidden');
 
-        // ----- सबमिट बटन: सारांश संग्रह -----
-        document.getElementById('submitForm').addEventListener('click', function() {
-            const data = {};
+        // ========== सबमिट हैंडलर – अब Google Sheets / Webhook पर भेजेगा ==========
+        const submitBtn = document.getElementById('submitForm');
+        const statusDiv = document.getElementById('formStatus');
 
-            // पहचान (आईडी या आधार)
-            if (hasIdYes.checked) {
-                data.farmerHasID = 'हाँ';
-                data.farmerID = document.getElementById('farmer_id').value.trim() || '(खाली)';
-            } else {
-                data.farmerHasID = 'नहीं (आधार)';
-                data.aadhaarNo = document.getElementById('aadhaar_no').value.trim() || '(खाली)';
+        // ⚠️ IMPORTANT: इस URL को अपने Zapier / Make / sheet.best वेबहुक URL से बदलें
+        const WEBHOOK_URL = 'YOUR_WEBHOOK_URL_HERE';  // ← यहाँ अपना वेबहुक डालें
+
+        submitBtn.addEventListener('click', async function() {
+            // FormData इकट्ठा करें
+            const form = document.getElementById('farmerForm');
+            const formData = new FormData(form);
+
+            // सबमिट बटन को disable करें और स्टेटस दिखाएँ
+            submitBtn.disabled = true;
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = '⏳ भेजा जा रहा है...';
+            statusDiv.innerHTML = '';
+
+            try {
+                // वेबहुक पर POST request भेजें
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // अगर सर्वर ने कोई JSON response दिया तो पार्स करें
+                let result = {};
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    result = await response.json();
+                } else {
+                    result.message = await response.text();
+                }
+
+                if (response.ok) {
+                    // सफलता संदेश
+                    statusDiv.innerHTML = '<div class="success-message">✅ डेटा सफलतापूर्वक सहेजा गया! धन्यवाद।</div>';
+                    form.reset(); // फॉर्म खाली करें
+
+                    // सभी डायनामिक सेक्शन को रीसेट करें
+                    document.getElementById('has_id_no').checked = true;
+                    toggleIdAadhaar(); // आधार ब्लॉक दिखाएँ, फार्मर आईडी छुपाएँ
+                    document.getElementById('help_farming_no').checked = true;
+                    document.getElementById('help_fertilizer_no').checked = true;
+                    document.getElementById('help_equipment_no').checked = true;
+                    farmingHelpType.classList.add('hidden');
+                    fertHelpType.classList.add('hidden');
+                    equipHelpType.classList.add('hidden');
+                    // सभी "अन्य" चेकबॉक्स अनचेक करें
+                    [farmingOtherCheck, fertilizerOtherCheck, equipOtherCheck, challengeOtherCheck].forEach(cb => {
+                        cb.checked = false;
+                        toggleOther(cb, document.getElementById(cb.id.replace('_check', '_row')));
+                    });
+                } else {
+                    // त्रुटि संदेश
+                    statusDiv.innerHTML = `<div class="error-message">❌ त्रुटि: ${result.message || 'कुछ गलत हो गया'}</div>`;
+                }
+            } catch (error) {
+                console.error(error);
+                statusDiv.innerHTML = `<div class="error-message">❌ नेटवर्क त्रुटि: ${error.message}</div>`;
+            } finally {
+                // बटन वापस सामान्य करें
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
-
-            // खेती प्रकार
-            const farmingChecked = [];
-            document.querySelectorAll('input[name="farming_type[]"]:checked').forEach(cb => farmingChecked.push(cb.value));
-            if (farmingOtherCheck.checked) {
-                const otherVal = document.getElementById('farming_other_text').value.trim();
-                if (otherVal) farmingChecked.push('अन्य: ' + otherVal);
-            }
-            data.farmingType = farmingChecked.length ? farmingChecked : ['कोई नहीं चुना'];
-
-            data.helpFarming = farmingHelpYes.checked ? 'हाँ' : 'नहीं';
-            if (farmingHelpYes.checked) {
-                const helpType = document.querySelector('input[name="help_farming_type"]:checked');
-                data.helpFarmingType = helpType ? (helpType.value === 'training' ? 'प्रशिक्षण' : 'उपकरण') : '(अचयनित)';
-            }
-
-            // उर्वरक
-            const fertChecked = [];
-            document.querySelectorAll('input[name="fertilizer_type[]"]:checked').forEach(cb => fertChecked.push(cb.value));
-            if (fertilizerOtherCheck.checked) {
-                const otherVal = document.getElementById('fertilizer_other_text').value.trim();
-                if (otherVal) fertChecked.push('अन्य: ' + otherVal);
-            }
-            data.fertilizerType = fertChecked.length ? fertChecked : ['कोई नहीं'];
-
-            data.helpFertilizer = fertHelpYes.checked ? 'हाँ' : 'नहीं';
-            if (fertHelpYes.checked) {
-                const helpType = document.querySelector('input[name="help_fertilizer_type"]:checked');
-                data.helpFertilizerType = helpType ? (helpType.value === 'training' ? 'प्रशिक्षण' : 'उपकरण') : '(अचयनित)';
-            }
-
-            // उपकरण
-            const equipChecked = [];
-            document.querySelectorAll('input[name="equipment_used[]"]:checked').forEach(cb => equipChecked.push(cb.value));
-            if (equipOtherCheck.checked) {
-                const otherVal = document.getElementById('equipment_other_text').value.trim();
-                if (otherVal) equipChecked.push('अन्य: ' + otherVal);
-            }
-            data.equipmentUsed = equipChecked.length ? equipChecked : ['कोई नहीं'];
-
-            data.helpEquipment = equipHelpYes.checked ? 'हाँ' : 'नहीं';
-            if (equipHelpYes.checked) {
-                const helpType = document.querySelector('input[name="help_equipment_type"]:checked');
-                data.helpEquipmentType = helpType ? (helpType.value === 'training' ? 'प्रशिक्षण' : 'उपकरण') : '(अचयनित)';
-            }
-
-            // चुनौतियाँ
-            const challenges = [];
-            document.querySelectorAll('input[name="challenges[]"]:checked').forEach(cb => challenges.push(cb.value));
-            if (challengeOtherCheck.checked) {
-                const otherVal = document.getElementById('challenge_other_text').value.trim();
-                if (otherVal) challenges.push('अन्य: ' + otherVal);
-            }
-            data.challenges = challenges.length ? challenges : ['कोई समस्या नहीं बताई'];
-
-            alert('📋 किसान डेटा सारांश:\n\n' + JSON.stringify(data, null, 2));
-            console.log('किसान डेटा:', data);
         });
     })();
 </script>
+<!-- निर्देश: 
+     1. Zapier या Make में "Webhook" ट्रिगर बनाएँ और URL कॉपी करें।
+     2. ऊपर 'WEBHOOK_URL' में वह URL पेस्ट करें।
+     3. फॉर्म भरें और सबमिट करें – डेटा सीधे Google Sheet में जाएगा।
+-->
 </body>
 </html>
