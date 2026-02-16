@@ -449,8 +449,8 @@
         const submitBtn = document.getElementById('submitForm');
         const statusDiv = document.getElementById('formStatus');
 
-        // ⚠️ IMPORTANT: इस URL को अपने Zapier / Make / sheet.best वेबहुक URL से बदलें
-        const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxn1OMrfaVHbDHfknKfXWNOmeeLyD9SYM8yB9hylyRrNbepP0ZnDFGNlWacJe6TBX4EjA/exec';  // ← यहाँ अपना वेबहुक डालें
+        // ⚠️ IMPORTANT: इस URL को अपने Zapier / Make / sheet.best / Apps Script वेबहुक URL से बदलें
+        const WEBHOOK_URL = 'YOUR_WEBHOOK_URL_HERE';  // ← यहाँ अपना वेबहुक डालें
 
         submitBtn.addEventListener('click', async function() {
             // FormData इकट्ठा करें
@@ -480,24 +480,36 @@
                 }
 
                 if (response.ok) {
-                    // सफलता संदेश
-                    statusDiv.innerHTML = '<div class="success-message">✅ डेटा सफलतापूर्वक सहेजा गया! धन्यवाद।</div>';
-                    form.reset(); // फॉर्म खाली करें
+                    // सफलता संदेश – अब अगले किसान के लिए फॉर्म भरने का विकल्प
+                    statusDiv.innerHTML = '<div class="success-message">✅ डेटा सफलतापूर्वक सहेजा गया! अब आप अगले किसान के लिए फॉर्म भर सकते हैं।</div>';
+                    
+                    // फॉर्म को पूरी तरह रीसेट करें
+                    form.reset();
 
                     // सभी डायनामिक सेक्शन को रीसेट करें
+                    // आईडी/आधार टॉगल
                     document.getElementById('has_id_no').checked = true;
                     toggleIdAadhaar(); // आधार ब्लॉक दिखाएँ, फार्मर आईडी छुपाएँ
+
+                    // हेल्प रेडियो को "नहीं" पर सेट करें
                     document.getElementById('help_farming_no').checked = true;
                     document.getElementById('help_fertilizer_no').checked = true;
                     document.getElementById('help_equipment_no').checked = true;
+                    
+                    // हेल्प टाइप ब्लॉक छुपाएँ
                     farmingHelpType.classList.add('hidden');
                     fertHelpType.classList.add('hidden');
                     equipHelpType.classList.add('hidden');
-                    // सभी "अन्य" चेकबॉक्स अनचेक करें
+
+                    // सभी "अन्य" चेकबॉक्स अनचेक करें और संबंधित टेक्स्ट फ़ील्ड छुपाएँ
                     [farmingOtherCheck, fertilizerOtherCheck, equipOtherCheck, challengeOtherCheck].forEach(cb => {
                         cb.checked = false;
-                        toggleOther(cb, document.getElementById(cb.id.replace('_check', '_row')));
+                        // उनके रो को छुपाने के लिए toggleOther कॉल करें
+                        const rowId = cb.id.replace('_check', '_row');
+                        const row = document.getElementById(rowId);
+                        toggleOther(cb, row);
                     });
+
                 } else {
                     // त्रुटि संदेश
                     statusDiv.innerHTML = `<div class="error-message">❌ त्रुटि: ${result.message || 'कुछ गलत हो गया'}</div>`;
@@ -506,7 +518,7 @@
                 console.error(error);
                 statusDiv.innerHTML = `<div class="error-message">❌ नेटवर्क त्रुटि: ${error.message}</div>`;
             } finally {
-                // बटन वापस सामान्य करें
+                // बटन वापस सामान्य करें (enable करें और टेक्स्ट रीसेट करें)
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;
             }
@@ -514,7 +526,7 @@
     })();
 </script>
 <!-- निर्देश: 
-     1. Zapier या Make में "Webhook" ट्रिगर बनाएँ और URL कॉपी करें।
+     1. Zapier या Make में "Webhook" ट्रिगर बनाएँ और URL कॉपी करें (या Apps Script Web App URL)।
      2. ऊपर 'WEBHOOK_URL' में वह URL पेस्ट करें।
      3. फॉर्म भरें और सबमिट करें – डेटा सीधे Google Sheet में जाएगा।
 -->
