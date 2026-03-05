@@ -301,25 +301,25 @@
             <div class="address-container">
                 <div class="address-row">
                     <label for="state">राज्य:</label>
-                    <select id="state_name" name="state" required>
+                    <select id="state" name="state" required>
                         <option value="बिहार">बिहार</option>
                     </select>
                 </div>
                 <div class="address-row">
                     <label for="district">ज़िला:</label>
-                    <select id="district_name" name="district" required>
+                    <select id="district" name="district" required>
                         <option value="">-- ज़िला चुनें --</option>
                     </select>
                 </div>
                 <div class="address-row">
                     <label for="block">प्रखंड / ब्लॉक:</label>
-                    <select id="block_name" name="block" required disabled>
+                    <select id="block" name="block" required disabled>
                         <option value="">-- पहले ज़िला चुनें --</option>
                     </select>
                 </div>
                 <div class="address-row">
                     <label for="village">गाँव:</label>
-                    <select id="village_name" name="village" required disabled>
+                    <select id="village" name="village" required disabled>
                         <option value="">-- पहले प्रखंड चुनें --</option>
                     </select>
                 </div>
@@ -562,7 +562,7 @@
             addressData.forEach(item => {
                 if (item.district) districtSet.add(item.district);
             });
-            const districtSelect = document.getElementById('district');
+            const districtSelect = document.getElementById('district_name');
             districtSelect.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
             [...districtSet].sort().forEach(dist => {
                 const opt = document.createElement('option');
@@ -574,8 +574,8 @@
 
         document.getElementById('district').addEventListener('change', function() {
             const selectedDistrict = this.value;
-            const blockSelect = document.getElementById('block');
-            const villageSelect = document.getElementById('village');
+            const blockSelect = document.getElementById('block_name');
+            const villageSelect = document.getElementById('village_name');
             blockSelect.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
             villageSelect.innerHTML = '<option value="">-- पहले प्रखंड चुनें --</option>';
             if (!selectedDistrict) {
@@ -600,9 +600,9 @@
         });
 
         document.getElementById('block').addEventListener('change', function() {
-            const selectedDistrict = document.getElementById('district').value;
+            const selectedDistrict = document.getElementById('district_name').value;
             const selectedBlock = this.value;
-            const villageSelect = document.getElementById('village');
+            const villageSelect = document.getElementById('village_name');
             villageSelect.innerHTML = '<option value="">-- गाँव चुनें --</option>';
             if (!selectedBlock) {
                 villageSelect.disabled = true;
