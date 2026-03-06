@@ -537,91 +537,102 @@
         challengeOtherRow.classList.add('hidden');
 
         // ========== पता डेटा लोड करें (Hugging Face) =========
-        let addressData = [];
-        let addressDataLoaded = false;
+    // ========== पता डेटा लोड करें (नया संस्करण – data array के साथ) =========
+let addressData = [];
+let addressDataLoaded = false;
 
-        const ADDRESS_JSON_URL = 'https://huggingface.co/datasets/bikashamit/villages_dataset/resolve/main/cb81a7a4-a3bc-4962-a1eb-838a1db5bfdb.json';  // ← यहाँ अपना Hugging Face JSON URL डालें
+// ⚠️ अपना GitHub Release URL यहाँ डालें
+const ADDRESS_JSON_URL = 'https://github.com/your-username/your-repo/releases/download/v1.0/cb81a7a4-a3bc-4962-a1eb-838a1db5bfdb.json';
 
-        fetch(ADDRESS_JSON_URL)
-            .then(response => {
-                if (!response.ok) throw new Error('पता डेटा लोड नहीं हुआ');
-                return response.json();
-            })
-            .then(data => {
-                addressData = data;
-                addressDataLoaded = true;
-                populateDistricts();
-            })
-            .catch(err => {
-                console.error(err);
-                alert('पते का डेटा लोड नहीं हुआ। कृपया पृष्ठ ताज़ा करें।');
-            });
-
-        function populateDistricts() {
-            const districtSet = new Set();
-            addressData.forEach(item => {
-                if (item.district) districtSet.add(item.district);
-            });
-            const districtSelect = document.getElementById('district_name');
-            districtSelect.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
-            [...districtSet].sort().forEach(dist => {
-                const opt = document.createElement('option');
-                opt.value = dist;
-                opt.textContent = dist;
-                districtSelect.appendChild(opt);
-            });
+fetch(ADDRESS_JSON_URL)
+    .then(response => {
+        if (!response.ok) throw new Error('पता डेटा लोड नहीं हुआ');
+        return response.json();
+    })
+    .then(json => {
+        // मान लें कि असली डेटा 'data' key के अंदर है
+        if (json.data && Array.isArray(json.data)) {
+            addressData = json.data;
+        } else {
+            // अगर 'data' नहीं है, तो पूरे json को array मान लें
+            addressData = Array.isArray(json) ? json : [];
         }
+        addressDataLoaded = true;
+        populateDistricts();
+    })
+    .catch(err => {
+        console.error(err);
+        alert('पते का डेटा लोड नहीं हुआ। कृपया पृष्ठ ताज़ा करें।');
+    });
 
-        document.getElementById('district').addEventListener('change', function() {
-            const selectedDistrict = this.value;
-            const blockSelect = document.getElementById('block_name');
-            const villageSelect = document.getElementById('village_name');
-            blockSelect.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
-            villageSelect.innerHTML = '<option value="">-- पहले प्रखंड चुनें --</option>';
-            if (!selectedDistrict) {
-                blockSelect.disabled = true;
-                villageSelect.disabled = true;
-                return;
-            }
-            const blocksInDistrict = new Set();
-            addressData.forEach(item => {
-                if (item.district === selectedDistrict && item.block) {
-                    blocksInDistrict.add(item.block);
-                }
-            });
-            [...blocksInDistrict].sort().forEach(block => {
-                const opt = document.createElement('option');
-                opt.value = block;
-                opt.textContent = block;
-                blockSelect.appendChild(opt);
-            });
-            blockSelect.disabled = false;
-            villageSelect.disabled = true;
-        });
+function populateDistricts() {
+    const districtSet = new Set();
+    addressData.forEach(item => {
+        // ⚠️ यहाँ district_name को अपने JSON के सही फ़ील्ड नाम से बदलें
+        if (item.district_name) districtSet.add(item.district_name);
+    });
+    const districtSelect = document.getElementById('district');
+    districtSelect.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
+    [...districtSet].sort().forEach(dist => {
+        const opt = document.createElement('option');
+        opt.value = dist;
+        opt.textContent = dist;
+        districtSelect.appendChild(opt);
+    });
+}
 
-        document.getElementById('block').addEventListener('change', function() {
-            const selectedDistrict = document.getElementById('district_name').value;
-            const selectedBlock = this.value;
-            const villageSelect = document.getElementById('village_name');
-            villageSelect.innerHTML = '<option value="">-- गाँव चुनें --</option>';
-            if (!selectedBlock) {
-                villageSelect.disabled = true;
-                return;
-            }
-            const villages = [];
-            addressData.forEach(item => {
-                if (item.district === selectedDistrict && item.block === selectedBlock && item.village) {
-                    villages.push(item.village);
-                }
-            });
-            villages.sort().forEach(village => {
-                const opt = document.createElement('option');
-                opt.value = village;
-                opt.textContent = village;
-                villageSelect.appendChild(opt);
-            });
-            villageSelect.disabled = false;
-        });
+document.getElementById('district').addEventListener('change', function() {
+    const selectedDistrict = this.value;
+    const blockSelect = document.getElementById('block');
+    const villageSelect = document.getElementById('village');
+    blockSelect.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
+    villageSelect.innerHTML = '<option value="">-- पहले प्रखंड चुनें --</option>';
+    if (!selectedDistrict) {
+        blockSelect.disabled = true;
+        villageSelect.disabled = true;
+        return;
+    }
+    const blocksInDistrict = new Set();
+    addressData.forEach(item => {
+        // ⚠️ district_name और block_name को सही नामों से बदलें
+        if (item.district_name === selectedDistrict && item.block_name) {
+            blocksInDistrict.add(item.block_name);
+        }
+    });
+    [...blocksInDistrict].sort().forEach(block => {
+        const opt = document.createElement('option');
+        opt.value = block;
+        opt.textContent = block;
+        blockSelect.appendChild(opt);
+    });
+    blockSelect.disabled = false;
+    villageSelect.disabled = true;
+});
+
+document.getElementById('block').addEventListener('change', function() {
+    const selectedDistrict = document.getElementById('district').value;
+    const selectedBlock = this.value;
+    const villageSelect = document.getElementById('village');
+    villageSelect.innerHTML = '<option value="">-- गाँव चुनें --</option>';
+    if (!selectedBlock) {
+        villageSelect.disabled = true;
+        return;
+    }
+    const villages = [];
+    addressData.forEach(item => {
+        // ⚠️ तीनों फ़ील्ड नाम सही करें
+        if (item.district_name === selectedDistrict && item.block_name === selectedBlock && item.village_name) {
+            villages.push(item.village_name);
+        }
+    });
+    villages.sort().forEach(village => {
+        const opt = document.createElement('option');
+        opt.value = village;
+        opt.textContent = village;
+        villageSelect.appendChild(opt);
+    });
+    villageSelect.disabled = false;
+});
 
         // ========== सबमिट हैंडलर – अब Google Sheets / Webhook पर भेजेगा ==========
         const submitBtn = document.getElementById('submitForm');
