@@ -276,7 +276,7 @@
 <body>
 <div class="form-container">
     <h1>किसान सहायता डेटाबेस</h1>
-    <div class="subhead">बिहार के किसानों के लिए · पता ड्रॉपडाउन के साथ</div>
+    <div class="subhead">बिहार · झारखंड · उत्तर प्रदेश · पश्चिम बंगाल · पता ड्रॉपडाउन के साथ</div>
 
     <form id="farmerForm">
 
@@ -308,24 +308,29 @@
             </div>
         </fieldset>
 
-        <!-- ========== पता – केवल यह सेक्शन बदला गया है ========== -->
+        <!-- ========== पता ========== -->
         <fieldset>
             <legend>🏠 पता</legend>
             <div class="address-container">
 
-                <!-- राज्य (fixed) -->
+                <!-- राज्य -->
                 <div class="address-row">
                     <label for="state">राज्य:</label>
                     <select id="state" name="state" required>
+                        <option value="">-- राज्य चुनें --</option>
                         <option value="बिहार">बिहार</option>
+                        <option value="झारखंड">झारखंड</option>
+                        <option value="उत्तर प्रदेश">उत्तर प्रदेश</option>
+                        <option value="पश्चिम बंगाल">पश्चिम बंगाल</option>
                     </select>
                 </div>
+                <div class="addr-hint" id="state-hint"></div>
 
                 <!-- ज़िला -->
                 <div class="address-row">
                     <label for="district">ज़िला:</label>
-                    <select id="district" name="district" required>
-                        <option value="">⏳ लोड हो रहा है...</option>
+                    <select id="district" name="district" required disabled>
+                        <option value="">-- पहले राज्य चुनें --</option>
                     </select>
                 </div>
                 <div class="addr-hint" id="district-hint"></div>
@@ -482,13 +487,11 @@
 (function(){
 
     // =====================================================================
-    // ⚠️ यहाँ अपना GitHub username और repo नाम डालें
-    // उदाहरण: "https://raw.githubusercontent.com/ramesh123/address-data/main/data"
-    // या jsDelivr CDN (तेज़): "https://cdn.jsdelivr.net/gh/ramesh123/address-data@main/data"
+    // GitHub raw URL — your actual repo
     // =====================================================================
     const DATA_BASE_URL = 'https://raw.githubusercontent.com/bikashamit/address-data/main/data';
 
-    // फ़ाइल नाम के लिए safe नाम बनाएँ (हिंदी के साथ काम करता है)
+    // Convert Hindi name to safe filename (matches how files were saved)
     function safe(name) {
         return name.replace(/[^\w\u0900-\u097F]+/g, '_').replace(/^_|_$/g, '');
     }
@@ -501,12 +504,13 @@
 
     function setHint(id, msg, type) {
         const el = document.getElementById(id);
+        if (!el) return;
         el.textContent = msg;
         el.className = 'addr-hint' + (type ? ' ' + type : '');
     }
 
     function resetBelow(level) {
-        if (level === 'district') {
+        if (level === 'state' || level === 'district') {
             const b = document.getElementById('block');
             const v = document.getElementById('village');
             b.innerHTML = '<option value="">-- पहले ज़िला चुनें --</option>';
@@ -516,6 +520,12 @@
             setHint('block-hint', '');
             setHint('village-hint', '');
         }
+        if (level === 'state') {
+            const d = document.getElementById('district');
+            d.innerHTML = '<option value="">-- पहले राज्य चुनें --</option>';
+            d.disabled = true;
+            setHint('district-hint', '');
+        }
         if (level === 'block') {
             const v = document.getElementById('village');
             v.innerHTML = '<option value="">-- पहले प्रखंड चुनें --</option>';
@@ -524,35 +534,39 @@
         }
     }
 
-    // ── पेज लोड होते ही ज़िले लोड करें ──────────────────────────────────
-    (async () => {
+    // ── राज्य बदलने पर ज़िले लोड करें ───────────────────────────────────
+    document.getElementById('state').addEventListener('change', async function() {
+        resetBelow('state');
+        const state = this.value;
+        if (!state) return;
         const distSel = document.getElementById('district');
         try {
             setHint('district-hint', '⏳ ज़िले लोड हो रहे हैं...', 'loading');
-            const districts = await loadJSON(`${DATA_BASE_URL}/districts/${safe('बिहार')}.json`);
+            const districts = await loadJSON(`https://raw.githubusercontent.com/bikashamit/address-data/main/data/districts/बिहार.json`);
             distSel.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
             districts.forEach(d => {
                 const o = document.createElement('option');
                 o.value = o.textContent = d;
                 distSel.appendChild(o);
             });
+            distSel.disabled = false;
             setHint('district-hint', `${districts.length} ज़िले उपलब्ध`);
         } catch(e) {
-            distSel.innerHTML = '<option value="">-- लोड नहीं हुआ --</option>';
-            setHint('district-hint', '⚠️ डेटा लोड नहीं हुआ। DATA_BASE_URL जाँचें।', 'error');
+            setHint('district-hint', '⚠️ ज़िले लोड नहीं हुए। GitHub URL जाँचें।', 'error');
         }
-    })();
+    });
 
     // ── ज़िला बदलने पर प्रखंड लोड करें ─────────────────────────────────
     document.getElementById('district').addEventListener('change', async function() {
         resetBelow('district');
+        const state    = document.getElementById('state').value;
         const district = this.value;
         if (!district) return;
         const blockSel = document.getElementById('block');
         try {
             setHint('block-hint', '⏳ प्रखंड लोड हो रहे हैं...', 'loading');
             const blocks = await loadJSON(
-                `${DATA_BASE_URL}/blocks/${safe('बिहार')}__${safe(district)}.json`
+                `https://raw.githubusercontent.com/bikashamit/address-data/main/data/blocks/बिहार__पटना.json`
             );
             blockSel.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
             blocks.forEach(b => {
@@ -570,6 +584,7 @@
     // ── प्रखंड बदलने पर गाँव लोड करें ──────────────────────────────────
     document.getElementById('block').addEventListener('change', async function() {
         resetBelow('block');
+        const state    = document.getElementById('state').value;
         const district = document.getElementById('district').value;
         const block    = this.value;
         if (!block) return;
@@ -577,7 +592,7 @@
         try {
             setHint('village-hint', '⏳ गाँव लोड हो रहे हैं...', 'loading');
             const villages = await loadJSON(
-                `${DATA_BASE_URL}/villages/${safe('बिहार')}__${safe(district)}__${safe(block)}.json`
+                `https://raw.githubusercontent.com/bikashamit/address-data/main/data/villages/बिहार__पटना__पटना_सदर.json`
             );
             villageSel.innerHTML = '<option value="">-- गाँव चुनें --</option>';
             villages.forEach(v => {
@@ -592,20 +607,20 @@
         }
     });
 
-    // ── पता वैलिडेशन (सबमिट के समय उपयोग) ──────────────────────────────
+    // ── पता वैलिडेशन ─────────────────────────────────────────────────────
     window.validateAddress = function() {
         const errors = [];
+        if (!document.getElementById('state').value)    errors.push('कृपया राज्य चुनें।');
         if (!document.getElementById('district').value) errors.push('कृपया ज़िला चुनें।');
         if (!document.getElementById('block').value)    errors.push('कृपया प्रखंड चुनें।');
         if (!document.getElementById('village').value)  errors.push('कृपया गाँव चुनें।');
         return errors;
     };
 
-    // ── पता रीसेट (सबमिट के बाद उपयोग) ─────────────────────────────────
+    // ── पता रीसेट ────────────────────────────────────────────────────────
     window.resetAddress = function() {
-        document.getElementById('district').value = '';
-        resetBelow('district');
-        setHint('district-hint', '');
+        document.getElementById('state').value = '';
+        resetBelow('state');
     };
 
     // =======================================================================
