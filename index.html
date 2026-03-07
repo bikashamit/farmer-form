@@ -489,7 +489,7 @@
     // =====================================================================
     // GitHub raw URL — your actual repo
     // =====================================================================
-    const DATA_BASE_URL = 'https://raw.githubusercontent.com/bikashamit/address-data/main/data';
+    const DATA_BASE_URL = 'https://cdn.jsdelivr.net/gh/bikashamit/address-data@main/data';
 
     // Convert Hindi name to safe filename (matches how files were saved)
     function safe(name) {
@@ -542,7 +542,7 @@
         const distSel = document.getElementById('district');
         try {
             setHint('district-hint', '⏳ ज़िले लोड हो रहे हैं...', 'loading');
-            const districts = await loadJSON(`https://raw.githubusercontent.com/bikashamit/address-data/main/data/districts/बिहार.json`);
+            const districts = await loadJSON(`${DATA_BASE_URL}/districts/${safe(state)}.json`);
             distSel.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
             districts.forEach(d => {
                 const o = document.createElement('option');
@@ -566,7 +566,7 @@
         try {
             setHint('block-hint', '⏳ प्रखंड लोड हो रहे हैं...', 'loading');
             const blocks = await loadJSON(
-                `https://raw.githubusercontent.com/bikashamit/address-data/main/data/blocks/बिहार__पटना.json`
+                `${DATA_BASE_URL}/blocks/${safe(state)}__${safe(district)}.json`
             );
             blockSel.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
             blocks.forEach(b => {
@@ -592,7 +592,7 @@
         try {
             setHint('village-hint', '⏳ गाँव लोड हो रहे हैं...', 'loading');
             const villages = await loadJSON(
-                `https://raw.githubusercontent.com/bikashamit/address-data/main/data/villages/बिहार__पटना__पटना_सदर.json`
+                `${DATA_BASE_URL}/villages/${safe(state)}__${safe(district)}__${safe(block)}.json`
             );
             villageSel.innerHTML = '<option value="">-- गाँव चुनें --</option>';
             villages.forEach(v => {
