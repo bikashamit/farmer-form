@@ -261,7 +261,6 @@
             color: #aaa;
             cursor: not-allowed;
         }
-        /* लोडिंग संकेत */
         .addr-hint {
             font-size: 0.82rem;
             margin-top: 0.1rem;
@@ -361,7 +360,6 @@
 
             </div>
         </fieldset>
-        <!-- ========== पता सेक्शन समाप्त ========== -->
 
         <!-- ========== खेती के प्रकार ========== -->
         <fieldset>
@@ -487,18 +485,22 @@
 (function(){
 
     // =====================================================================
-    // GitHub raw URL — your actual repo
+    // GitHub CDN URL — your actual repo
     // =====================================================================
     const DATA_BASE_URL = 'https://cdn.jsdelivr.net/gh/bikashamit/address-data@main/data';
 
-    // Convert Hindi name to safe filename (matches how files were saved)
+    // Convert Hindi name to safe filename
+    // IMPORTANT: This must exactly match the Python safe() function used to generate files:
+    //   re.sub(r'[^\w\u0900-\u097F]+', '_', name).strip('_')
+    // \w in Python matches [a-zA-Z0-9_], \u0900-\u097F is Devanagari range
     function safe(name) {
-        return name.replace(/[^\w\u0900-\u097F]+/g, '_').replace(/^_|_$/g, '');
+        // Replace any char that is NOT: word char, Devanagari, or digit — with underscore
+        return name.replace(/[^\w\u0900-\u097F]+/g, '_').replace(/^_+|_+$/g, '');
     }
 
     async function loadJSON(url) {
         const res = await fetch(url);
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + url);
         return res.json();
     }
 
@@ -542,7 +544,8 @@
         const distSel = document.getElementById('district');
         try {
             setHint('district-hint', '⏳ ज़िले लोड हो रहे हैं...', 'loading');
-            const districts = await loadJSON(`${DATA_BASE_URL}/districts/${safe(state)}.json`);
+            const url = `${DATA_BASE_URL}/districts/${safe(state)}.json`;
+            const districts = await loadJSON(url);
             distSel.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
             districts.forEach(d => {
                 const o = document.createElement('option');
@@ -553,6 +556,7 @@
             setHint('district-hint', `${districts.length} ज़िले उपलब्ध`);
         } catch(e) {
             setHint('district-hint', '⚠️ ज़िले लोड नहीं हुए। GitHub URL जाँचें।', 'error');
+            console.error(e);
         }
     });
 
@@ -565,9 +569,8 @@
         const blockSel = document.getElementById('block');
         try {
             setHint('block-hint', '⏳ प्रखंड लोड हो रहे हैं...', 'loading');
-            const blocks = await loadJSON(
-                `${DATA_BASE_URL}/blocks/${safe(state)}__${safe(district)}.json`
-            );
+            const url = `${DATA_BASE_URL}/blocks/${safe(state)}__${safe(district)}.json`;
+            const blocks = await loadJSON(url);
             blockSel.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
             blocks.forEach(b => {
                 const o = document.createElement('option');
@@ -578,6 +581,7 @@
             setHint('block-hint', `${blocks.length} प्रखंड`);
         } catch(e) {
             setHint('block-hint', '⚠️ प्रखंड लोड नहीं हुए।', 'error');
+            console.error(e);
         }
     });
 
@@ -591,9 +595,8 @@
         const villageSel = document.getElementById('village');
         try {
             setHint('village-hint', '⏳ गाँव लोड हो रहे हैं...', 'loading');
-            const villages = await loadJSON(
-                `${DATA_BASE_URL}/villages/${safe(state)}__${safe(district)}__${safe(block)}.json`
-            );
+            const url = `${DATA_BASE_URL}/villages/${safe(state)}__${safe(district)}__${safe(block)}.json`;
+            const villages = await loadJSON(url);
             villageSel.innerHTML = '<option value="">-- गाँव चुनें --</option>';
             villages.forEach(v => {
                 const o = document.createElement('option');
@@ -604,6 +607,7 @@
             setHint('village-hint', `${villages.length} गाँव`);
         } catch(e) {
             setHint('village-hint', '⚠️ गाँव लोड नहीं हुए।', 'error');
+            console.error(e);
         }
     });
 
@@ -624,10 +628,8 @@
     };
 
     // =======================================================================
-    // नीचे का पूरा कोड आपका मूल कोड है — कुछ नहीं बदला
+    // पहचान टॉगल
     // =======================================================================
-
-    // ----- पहचान टॉगल -----
     const hasIdYes = document.getElementById('has_id_yes');
     const hasIdNo  = document.getElementById('has_id_no');
     const farmerIdBlock = document.getElementById('farmer_id_block');
@@ -650,7 +652,7 @@
     hasIdNo.addEventListener('change', toggleIdAadhaar);
     toggleIdAadhaar();
 
-    // ----- सहायता टॉगल -----
+    // सहायता टॉगल
     const farmingHelpYes  = document.getElementById('help_farming_yes');
     const farmingHelpNo   = document.getElementById('help_farming_no');
     const farmingHelpType = document.getElementById('farming_help_type');
@@ -675,7 +677,7 @@
     fertHelpType.classList.add('hidden');
     equipHelpType.classList.add('hidden');
 
-    // ----- अन्य फील्ड टॉगल -----
+    // अन्य फील्ड टॉगल
     const farmingOtherCheck    = document.getElementById('farming_other_check');
     const farmingOtherRow      = document.getElementById('farming_other_row');
     const fertilizerOtherCheck = document.getElementById('fertilizer_other_check');
