@@ -458,6 +458,9 @@
         </fieldset>
 
         <hr>
+        <!-- DEBUG PANEL — testing ke baad hata dena -->
+        <button type="button" onclick="showDebug()" style="background:#555;color:white;border:none;padding:0.6rem 1.4rem;border-radius:40px;font-size:0.9rem;cursor:pointer;margin-bottom:0.8rem;width:100%;">🔍 Preview Data (Debug)</button>
+        <div id="debugPanel" style="display:none;background:#1a1a1a;color:#7eff7e;font-family:monospace;font-size:0.8rem;padding:1rem 1.2rem;border-radius:12px;margin-bottom:1rem;white-space:pre-wrap;word-break:break-all;"></div>
         <button type="button" class="button" id="submitForm">📋 किसान जानकारी सबमिट करें</button>
         <div id="formStatus" class="note"></div>
     </form>
@@ -623,7 +626,7 @@
     // ========== सबमिट ==========
     const submitBtn = document.getElementById('submitForm');
     const statusDiv = document.getElementById('formStatus');
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbzY53MvRtAvLFt2gjJsBtJgbULgCgRy2g9YoYAe4VBTn_KP3MDJUDtSlgo3VQr81hk1Lg/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDo3myF_3P8vyK_rJGIS2BOy6_AK-uCp-qxBK2uGFky-ziRM98Anns-547Ufqs0TAamw/exec';
 
     function validateVisibleFields() {
         const errors = [];
@@ -710,13 +713,14 @@
         d.makhana_exp_years  = document.getElementById('makhana_exp_years').value.trim();
         d.waterland_katha    = document.getElementById('waterland_katha').value.trim();
         // checkboxes — join as comma-separated
-        d.makhana_help    = Array.from(document.querySelectorAll('input[name="makhana_help[]"]:checked')).map(c=>c.value).join(', ');
+        d.makhana_help    = Array.from(document.querySelectorAll('input[name="makhana_help[]"]:checked')).map(c=>c.value).join(' | ');
         d.makhana_help_other = document.getElementById('makhana_help_other_text').value.trim();
-        d.challenges      = Array.from(document.querySelectorAll('input[name="challenges[]"]:checked')).map(c=>c.value).join(', ');
+        d.challenges      = Array.from(document.querySelectorAll('input[name="challenges[]"]:checked')).map(c=>c.value).join(' | ');
         d.challenge_other = document.getElementById('challenge_other_text').value.trim();
 
         // Send as URL-encoded — Apps Script e.parameter reads this perfectly
         const body = Object.entries(d).map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
+        console.log('PAYLOAD SENT:', body); // check browser console if needed
 
         try {
             const response = await fetch(WEBHOOK_URL, {
@@ -751,6 +755,38 @@ window.resetAddress();
     });
 
 })();
+
+// ── DEBUG FUNCTION ──────────────────────────────────────────
+function showDebug() {
+    const d = {};
+    d.has_id             = document.querySelector('input[name="has_id"]:checked')?.value || '(empty)';
+    d.farmer_id          = document.getElementById('farmer_id').value.trim() || '(empty)';
+    d.aadhaar_no         = document.getElementById('aadhaar_no').value.trim() || '(empty)';
+    d.mobile_no          = document.getElementById('mobile_no').value.trim() || '(empty)';
+    d.mobile_confirm     = document.getElementById('mobile_confirm').value.trim() || '(empty)';
+    d.farmer_name        = document.getElementById('farmer_name').value.trim() || '(empty)';
+    d.state              = document.getElementById('state').value || '(empty)';
+    d.district           = document.getElementById('district').value || '(empty)';
+    d.block              = document.getElementById('block').value || '(empty)';
+    d.house_detail       = document.getElementById('house_detail').value.trim() || '(empty)';
+    d.makhana_experience = document.querySelector('input[name="makhana_experience"]:checked')?.value || '(empty)';
+    d.makhana_exp_years  = document.getElementById('makhana_exp_years').value.trim() || '(empty)';
+    d.waterland_katha    = document.getElementById('waterland_katha').value.trim() || '(empty)';
+    d.makhana_help       = Array.from(document.querySelectorAll('input[name="makhana_help[]"]:checked')).map(c=>c.value).join(', ') || '(none checked)';
+    d.makhana_help_other = document.getElementById('makhana_help_other_text').value.trim() || '(empty)';
+    d.challenges         = Array.from(document.querySelectorAll('input[name="challenges[]"]:checked')).map(c=>c.value).join(', ') || '(none checked)';
+    d.challenge_other    = document.getElementById('challenge_other_text').value.trim() || '(empty)';
+
+    const panel = document.getElementById('debugPanel');
+    panel.style.display = 'block';
+    panel.textContent = '=== DATA BEING SENT TO SHEET ===
+
+' +
+        Object.entries(d).map(([k,v]) => 'Col ' + k + ':
+  ' + v).join('
+
+');
+}
 </script>
 </body>
 </html>
