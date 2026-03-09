@@ -394,132 +394,47 @@
             </div>
         </fieldset>
 
-        <!-- ========== मखाना की खेती — अनुभव ========== -->
+        <!-- ========== मखाना की खेती ========== -->
         <fieldset>
             <legend>🌸 मखाना की खेती</legend>
 
             <!-- पूर्व अनुभव -->
-            <div class="section-label">▶ क्या किसान को मखाना की खेती का पहले से अनुभव है?</div>
+            <div class="section-label">▶ क्या पहले से मखाना की खेती का अनुभव है?</div>
             <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="makhana_experience" value="yes" id="makhana_exp_yes"> हाँ, पहले से अनुभव है</label>
-                <label class="radio-option"><input type="radio" name="makhana_experience" value="no" id="makhana_exp_no" checked> नहीं, पहली बार करेंगे</label>
+                <label class="radio-option"><input type="radio" name="makhana_experience" value="yes" id="makhana_exp_yes"> हाँ</label>
+                <label class="radio-option"><input type="radio" name="makhana_experience" value="no" id="makhana_exp_no" checked> नहीं</label>
             </div>
-
-            <!-- अनुभव वर्ष (केवल तभी दिखे जब हाँ) -->
             <div id="makhana_exp_years_block" class="other-row hidden">
-                <label for="makhana_exp_years">कितने वर्षों का अनुभव है?</label>
-                <input type="number" id="makhana_exp_years" name="makhana_exp_years" placeholder="वर्षों की संख्या" min="1" max="60" style="width:180px;">
+                <label for="makhana_exp_years">कितने वर्ष?</label>
+                <input type="number" id="makhana_exp_years" name="makhana_exp_years" placeholder="वर्ष" min="1" max="60" style="width:140px;">
                 <span class="katha-unit">वर्ष</span>
             </div>
 
             <hr>
 
-            <!-- जलभूमि क्षेत्रफल -->
-            <div class="section-label">▶ किसान के पास कितनी जलभूमि (water land) है?</div>
+            <!-- जलभूमि -->
+            <div class="section-label">▶ कितनी जलभूमि है?</div>
             <div class="katha-input-row">
                 <label for="waterland_katha">क्षेत्रफल:</label>
-                <input type="number" id="waterland_katha" name="waterland_katha" placeholder="कठा की संख्या" min="0" step="0.5" required>
+                <input type="number" id="waterland_katha" name="waterland_katha" placeholder="कठा" min="0" step="0.5" required>
                 <span class="katha-unit">कठा</span>
             </div>
 
             <hr>
 
-            <!-- सहायता का प्रकार -->
-            <div class="section-label">▶ किसान को किस प्रकार की सहायता चाहिए? (कम से कम एक चुनें)</div>
+            <!-- सहायता -->
+            <div class="section-label">▶ किस चीज़ की ज़रूरत है? (कम से कम एक चुनें)</div>
             <div class="checkbox-grid" id="makhanaHelpGroup">
-                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="बीज (seed)"> 🌱 बीज (Seed)</label>
-                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="प्रशिक्षण (training)"> 📘 प्रशिक्षण (Training)</label>
-                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="तैरती नाव (floating boat)"> 🚣 तैरती नाव (Floating Boat)</label>
-                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="जल पम्प (water pump)"> 💧 जल पम्प (Water Pump)</label>
-                <label class="checkbox-item"><input type="checkbox" id="makhana_help_other_check" value="अन्य"> अन्य (Other)</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Seed"> 🌱 बीज</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Fertilizer"> 🧪 खाद / उर्वरक</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Water Pump"> 💧 वाटर पम्प</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Floating Device"> 🚣 फ्लोटिंग डिवाइस</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Training"> 📘 प्रशिक्षण</label>
+                <label class="checkbox-item"><input type="checkbox" id="makhana_help_other_check" value="Other"> अन्य</label>
             </div>
             <div id="makhana_help_other_row" class="other-row hidden">
-                <label for="makhana_help_other_text">कृपया अन्य सहायता बताएँ:</label>
+                <label for="makhana_help_other_text">अन्य क्या चाहिए?</label>
                 <input type="text" id="makhana_help_other_text" name="makhana_help_other" placeholder="उदा. भंडारण सुविधा">
-            </div>
-
-        </fieldset>
-
-        <!-- ========== फसल के बाद की प्रक्रिया ========== -->
-        <fieldset>
-            <legend>🏭 फसल के बाद — पिटाई से बाज़ार तक</legend>
-
-            <!-- पिटाई (थ्रेशिंग/प्रोसेसिंग) -->
-            <div class="section-label">▶ मखाना पिटाई (Processing) कहाँ होती है?</div>
-            <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="processing_location" value="घर पर (at home)"> 🏠 घर पर</label>
-                <label class="radio-option"><input type="radio" name="processing_location" value="सामुदायिक केंद्र (community center)"> 🏘️ सामुदायिक केंद्र</label>
-                <label class="radio-option"><input type="radio" name="processing_location" value="व्यापारी के यहाँ (trader)"> 🏪 व्यापारी के यहाँ</label>
-                <label class="radio-option"><input type="radio" name="processing_location" value="अन्य (other)" id="proc_loc_other_radio"> अन्य</label>
-            </div>
-            <div id="proc_loc_other_row" class="other-row hidden">
-                <label for="proc_loc_other_text">कृपया बताएँ:</label>
-                <input type="text" id="proc_loc_other_text" name="processing_location_other" placeholder="उदा. किराये की मशीन">
-            </div>
-
-            <hr>
-
-            <!-- भंडारण -->
-            <div class="section-label">▶ मखाना भंडारण (Storage) कैसे करते हैं?</div>
-            <div class="checkbox-grid">
-                <label class="checkbox-item"><input type="checkbox" name="storage_method[]" value="घर में बोरों में (sacks at home)"> 🏠 घर में बोरों में</label>
-                <label class="checkbox-item"><input type="checkbox" name="storage_method[]" value="कोल्ड स्टोरेज (cold storage)"> ❄️ कोल्ड स्टोरेज</label>
-                <label class="checkbox-item"><input type="checkbox" name="storage_method[]" value="गोदाम (warehouse)"> 🏬 गोदाम</label>
-                <label class="checkbox-item"><input type="checkbox" name="storage_method[]" value="तुरंत बेच देते हैं (sell immediately)"> ⚡ तुरंत बेच देते हैं</label>
-                <label class="checkbox-item"><input type="checkbox" id="storage_other_check" value="अन्य"> अन्य</label>
-            </div>
-            <div id="storage_other_row" class="other-row hidden">
-                <label for="storage_other_text">अन्य भंडारण विधि:</label>
-                <input type="text" id="storage_other_text" name="storage_method_other" placeholder="उदा. सहकारी गोदाम">
-            </div>
-
-            <hr>
-
-            <!-- बिक्री / मार्केटिंग -->
-            <div class="section-label">▶ मखाना कहाँ बेचते हैं? (कम से कम एक चुनें)</div>
-            <div class="checkbox-grid">
-                <label class="checkbox-item"><input type="checkbox" name="sell_location[]" value="स्थानीय मंडी (local mandi)"> 🏪 स्थानीय मंडी</label>
-                <label class="checkbox-item"><input type="checkbox" name="sell_location[]" value="सीधे व्यापारी को (direct trader)"> 🤝 सीधे व्यापारी को</label>
-                <label class="checkbox-item"><input type="checkbox" name="sell_location[]" value="FPO / सहकारी समिति"> 🌾 FPO / सहकारी समिति</label>
-                <label class="checkbox-item"><input type="checkbox" name="sell_location[]" value="ऑनलाइन (online)"> 📱 ऑनलाइन</label>
-                <label class="checkbox-item"><input type="checkbox" name="sell_location[]" value="सरकारी खरीद केंद्र (govt procurement)"> 🏛️ सरकारी खरीद केंद्र</label>
-                <label class="checkbox-item"><input type="checkbox" id="sell_other_check" value="अन्य"> अन्य</label>
-            </div>
-            <div id="sell_other_row" class="other-row hidden">
-                <label for="sell_other_text">अन्य बिक्री स्थान:</label>
-                <input type="text" id="sell_other_text" name="sell_location_other" placeholder="उदा. सीधे उपभोक्ता को">
-            </div>
-
-            <hr>
-
-            <!-- परिवहन -->
-            <div class="section-label">▶ बाज़ार तक परिवहन (Transport) कैसे होता है?</div>
-            <div class="radio-group">
-                <label class="radio-option"><input type="radio" name="transport_method" value="खुद का वाहन (own vehicle)"> 🚛 खुद का वाहन</label>
-                <label class="radio-option"><input type="radio" name="transport_method" value="किराये का वाहन (hired vehicle)"> 🚐 किराये का वाहन</label>
-                <label class="radio-option"><input type="radio" name="transport_method" value="व्यापारी खुद उठाता है (trader collects)"> 📦 व्यापारी खुद उठाता है</label>
-                <label class="radio-option"><input type="radio" name="transport_method" value="अन्य (other)" id="transport_other_radio"> अन्य</label>
-            </div>
-            <div id="transport_other_row" class="other-row hidden">
-                <label for="transport_other_text">कृपया बताएँ:</label>
-                <input type="text" id="transport_other_text" name="transport_method_other" placeholder="उदा. साइकिल / पैदल">
-            </div>
-
-            <hr>
-
-            <!-- फसल के बाद की मदद -->
-            <div class="section-label">▶ फसल के बाद किस चरण में मदद चाहिए? (कम से कम एक चुनें)</div>
-            <div class="checkbox-grid">
-                <label class="checkbox-item"><input type="checkbox" name="postcrop_help[]" value="पिटाई मशीन (processing machine)"> ⚙️ पिटाई मशीन</label>
-                <label class="checkbox-item"><input type="checkbox" name="postcrop_help[]" value="भंडारण सुविधा (storage facility)"> 🏬 भंडारण सुविधा</label>
-                <label class="checkbox-item"><input type="checkbox" name="postcrop_help[]" value="उचित मूल्य / मंडी संपर्क (fair price/market linkage)"> 💰 उचित मूल्य / मंडी संपर्क</label>
-                <label class="checkbox-item"><input type="checkbox" name="postcrop_help[]" value="परिवहन सहायता (transport support)"> 🚛 परिवहन सहायता</label>
-                <label class="checkbox-item"><input type="checkbox" name="postcrop_help[]" value="पैकेजिंग / ब्रांडिंग (packaging/branding)"> 📦 पैकेजिंग / ब्रांडिंग</label>
-                <label class="checkbox-item"><input type="checkbox" id="postcrop_help_other_check" value="अन्य"> अन्य</label>
-            </div>
-            <div id="postcrop_help_other_row" class="other-row hidden">
-                <label for="postcrop_help_other_text">अन्य सहायता बताएँ:</label>
-                <input type="text" id="postcrop_help_other_text" name="postcrop_help_other" placeholder="उदा. FPO से जोड़ना">
             </div>
 
         </fieldset>
@@ -529,19 +444,16 @@
             <legend>⚠️ वर्तमान चुनौतियाँ</legend>
             <div class="section-label">▶ किसान को किन समस्याओं का सामना है? (कम से कम एक चुनें)</div>
             <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="बीज की कमी"> 🌱 बीज की कमी</label>
                 <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="पानी की कमी"> 💧 पानी की कमी</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="कीट एवं रोग"> 🐛 कीट एवं रोग</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उर्वरक की कमी/महंगाई"> 🧪 उर्वरक की कमी / महंगाई</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="फसलों के उचित दाम न मिलना"> 💰 फसलों के उचित दाम न मिलना</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="मौसम की मार (बाढ़/सूखा)"> 🌧️ मौसम की मार (बाढ़/सूखा)</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="कर्ज का बोझ"> 📉 कर्ज का बोझ</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="जानकारी/प्रशिक्षण का अभाव"> 📚 जानकारी/प्रशिक्षण का अभाव</label>
-                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उपकरणों की कमी"> 🔧 उपकरणों की कमी</label>
-                <label class="checkbox-item"><input type="checkbox" id="challenge_other_check" value="अन्य"> अन्य समस्या</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उर्वरक की कमी"> 🧪 उर्वरक की कमी</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उपकरण नहीं हैं"> 🔧 उपकरण नहीं हैं</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उचित दाम नहीं मिलता"> 💰 उचित दाम नहीं मिलता</label>
+                <label class="checkbox-item"><input type="checkbox" id="challenge_other_check" value="अन्य"> अन्य</label>
             </div>
             <div id="challenge_other_row" class="other-row hidden">
-                <label for="challenge_other_text">कृपया अन्य समस्या बताएँ:</label>
-                <input type="text" id="challenge_other_text" name="challenge_other" placeholder="जैसे बीज की अनुपलब्धता">
+                <label for="challenge_other_text">अन्य समस्या:</label>
+                <input type="text" id="challenge_other_text" name="challenge_other" placeholder="जैसे बाढ़, कर्ज">
             </div>
         </fieldset>
 
@@ -707,42 +619,11 @@
     makhanaHelpOtherRow.classList.add('hidden');
     challengeOtherRow.classList.add('hidden');
 
-    // =======================================================================
-    // फसल के बाद — रेडियो "अन्य" टॉगल
-    // =======================================================================
-    function toggleRadioOther(radioId, rowId, textId) {
-        const radios = document.querySelectorAll(`input[name="${radioId}"]`);
-        const row    = document.getElementById(rowId);
-        const otherRadio = document.getElementById(textId);
-        radios.forEach(r => r.addEventListener('change', () => {
-            const show = otherRadio && otherRadio.checked;
-            row.classList.toggle('hidden', !show);
-            if (!show) { const t = row.querySelector('input[type="text"]'); if (t) t.value = ''; }
-        }));
-        row.classList.add('hidden');
-    }
-    toggleRadioOther('processing_location', 'proc_loc_other_row',    'proc_loc_other_radio');
-    toggleRadioOther('transport_method',    'transport_other_row',   'transport_other_radio');
-
-    // checkbox अन्य टॉगल
-    const storageOtherCheck      = document.getElementById('storage_other_check');
-    const storageOtherRow        = document.getElementById('storage_other_row');
-    const sellOtherCheck         = document.getElementById('sell_other_check');
-    const sellOtherRow           = document.getElementById('sell_other_row');
-    const postcropHelpOtherCheck = document.getElementById('postcrop_help_other_check');
-    const postcropHelpOtherRow   = document.getElementById('postcrop_help_other_row');
-
-    storageOtherCheck.addEventListener('change',      () => toggleOther(storageOtherCheck, storageOtherRow));
-    sellOtherCheck.addEventListener('change',         () => toggleOther(sellOtherCheck, sellOtherRow));
-    postcropHelpOtherCheck.addEventListener('change', () => toggleOther(postcropHelpOtherCheck, postcropHelpOtherRow));
-    storageOtherRow.classList.add('hidden');
-    sellOtherRow.classList.add('hidden');
-    postcropHelpOtherRow.classList.add('hidden');
 
     // ========== सबमिट ==========
     const submitBtn = document.getElementById('submitForm');
     const statusDiv = document.getElementById('formStatus');
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwFaMyns6ViQJeRR9exWdynojdXcGVf_zfZgyo44XktyJr9jGkz0Mdn_i59QumB9ub7/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDo3myF_3P8vyK_rJGIS2BOy6_AK-uCp-qxBK2uGFky-ziRM98Anns-547Ufqs0TAamw/exec';
 
     function validateVisibleFields() {
         const errors = [];
@@ -790,39 +671,6 @@
         if (challengeOtherCheck.checked && !document.getElementById('challenge_other_text').value.trim())
             errors.push('कृपया अन्य समस्या का विवरण भरें।');
 
-        // फसल के बाद — पिटाई स्थान
-        const procLoc = document.querySelector('input[name="processing_location"]:checked');
-        if (!procLoc) errors.push('कृपया मखाना पिटाई का स्थान चुनें।');
-        if (procLoc && procLoc.id === 'proc_loc_other_radio' && !document.getElementById('proc_loc_other_text').value.trim())
-            errors.push('कृपया पिटाई स्थान का विवरण भरें।');
-
-        // भंडारण
-        const storageChecked = document.querySelectorAll('input[name="storage_method[]"]:checked');
-        if (storageChecked.length === 0 && !storageOtherCheck.checked)
-            errors.push('कृपया कम से कम एक भंडारण विधि चुनें।');
-        if (storageOtherCheck.checked && !document.getElementById('storage_other_text').value.trim())
-            errors.push('कृपया अन्य भंडारण विधि का विवरण भरें।');
-
-        // बिक्री स्थान
-        const sellChecked = document.querySelectorAll('input[name="sell_location[]"]:checked');
-        if (sellChecked.length === 0 && !sellOtherCheck.checked)
-            errors.push('कृपया कम से कम एक बिक्री स्थान चुनें।');
-        if (sellOtherCheck.checked && !document.getElementById('sell_other_text').value.trim())
-            errors.push('कृपया अन्य बिक्री स्थान का विवरण भरें।');
-
-        // परिवहन
-        const transport = document.querySelector('input[name="transport_method"]:checked');
-        if (!transport) errors.push('कृपया परिवहन विधि चुनें।');
-        if (transport && transport.id === 'transport_other_radio' && !document.getElementById('transport_other_text').value.trim())
-            errors.push('कृपया परिवहन विधि का विवरण भरें।');
-
-        // फसल के बाद मदद
-        const postcropChecked = document.querySelectorAll('input[name="postcrop_help[]"]:checked');
-        if (postcropChecked.length === 0 && !postcropHelpOtherCheck.checked)
-            errors.push('कृपया फसल के बाद कम से कम एक सहायता का प्रकार चुनें।');
-        if (postcropHelpOtherCheck.checked && !document.getElementById('postcrop_help_other_text').value.trim())
-            errors.push('कृपया फसल के बाद की अन्य सहायता का विवरण भरें।');
-
         // पता
         errors.push(...window.validateAddress());
 
@@ -863,12 +711,7 @@
                 toggleMakhanaExp();
                 toggleOther(makhanaHelpOtherCheck, makhanaHelpOtherRow);
                 toggleOther(challengeOtherCheck, challengeOtherRow);
-                toggleOther(storageOtherCheck, storageOtherRow);
-                toggleOther(sellOtherCheck, sellOtherRow);
-                toggleOther(postcropHelpOtherCheck, postcropHelpOtherRow);
-                document.getElementById('proc_loc_other_row').classList.add('hidden');
-                document.getElementById('transport_other_row').classList.add('hidden');
-                window.resetAddress();
+window.resetAddress();
             } else {
                 statusDiv.innerHTML = `<div class="error-message">❌ त्रुटि: ${result.message || 'कुछ गलत हो गया'}</div>`;
             }
