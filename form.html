@@ -623,7 +623,7 @@
     // ========== सबमिट ==========
     const submitBtn = document.getElementById('submitForm');
     const statusDiv = document.getElementById('formStatus');
-    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxDeZRDBAcvfQX3idw6NVLDHEXvxqXd4xxSLyZQ1KA3-fuIJ4ivqUBLoVEStvs2KS6CsA/exec';
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbwDo3myF_3P8vyK_rJGIS2BOy6_AK-uCp-qxBK2uGFky-ziRM98Anns-547Ufqs0TAamw/exec';
 
     function validateVisibleFields() {
         const errors = [];
@@ -693,10 +693,37 @@
 
         submitBtn.textContent = '⏳ भेजा जा रहा है...';
         const form = document.getElementById('farmerForm');
-        const formData = new FormData(form);
+
+        // Build flat key=value payload — Google Apps Script reads this reliably
+        const d = {};
+        d.has_id          = document.querySelector('input[name="has_id"]:checked')?.value || '';
+        d.farmer_id       = document.getElementById('farmer_id').value.trim();
+        d.aadhaar_no      = document.getElementById('aadhaar_no').value.trim();
+        d.mobile_no       = document.getElementById('mobile_no').value.trim();
+        d.mobile_confirm  = document.getElementById('mobile_confirm').value.trim();
+        d.farmer_name     = document.getElementById('farmer_name').value.trim();
+        d.state           = document.getElementById('state').value;
+        d.district        = document.getElementById('district').value;
+        d.block           = document.getElementById('block').value;
+        d.house_detail    = document.getElementById('house_detail').value.trim();
+        d.makhana_experience = document.querySelector('input[name="makhana_experience"]:checked')?.value || '';
+        d.makhana_exp_years  = document.getElementById('makhana_exp_years').value.trim();
+        d.waterland_katha    = document.getElementById('waterland_katha').value.trim();
+        // checkboxes — join as comma-separated
+        d.makhana_help    = Array.from(document.querySelectorAll('input[name="makhana_help[]"]:checked')).map(c=>c.value).join(', ');
+        d.makhana_help_other = document.getElementById('makhana_help_other_text').value.trim();
+        d.challenges      = Array.from(document.querySelectorAll('input[name="challenges[]"]:checked')).map(c=>c.value).join(', ');
+        d.challenge_other = document.getElementById('challenge_other_text').value.trim();
+
+        // Send as URL-encoded — Apps Script e.parameter reads this perfectly
+        const body = Object.entries(d).map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
 
         try {
-            const response = await fetch(WEBHOOK_URL, { method: 'POST', body: formData });
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            });
             let result = {};
             const ct = response.headers.get('content-type');
             if (ct && ct.includes('application/json')) result = await response.json();
