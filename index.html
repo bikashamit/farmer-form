@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>मखाना किसान सहायता | मिथिलांचल में मखाना क्रांति</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Nirmala UI', 'Hindi', sans-serif;
+        }
+        body {
+            background: #f0f9f0;
+            color: #1f3b2c;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        header {
+            background: #1f7a4c;
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 4px 12px rgba(0,40,0,0.2);
+        }
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .logo h1 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo h1::before {
+            content: "🌰";
+            font-size: 2.5rem;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            transition: background 0.3s;
+        }
+        nav a:hover {
+            background: #0e5a32;
+        }
+        .hero {
+            background: linear-gradient(rgba(0,60,30,0.7), rgba(0,40,20,0.7)), url('https://images.unsplash.com/photo-1625047509168-a702ec0b4f4b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') center/cover no-repeat;
+            color: white;
+            padding: 5rem 0;
+            text-align: center;
+        }
+        .hero h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.3rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        .btn {
+            display: inline-block;
+            background: #f5b342;
+            color: #1f3b2c;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .btn:hover {
+            background: #ffa500;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+        .section {
+            padding: 4rem 0;
+            border-bottom: 1px solid #c0e0ba;
+        }
+        .section h3 {
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: #1f7a4c;
+            text-align: center;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .card {
+            background: white;
+            border-radius: 28px;
+            padding: 2rem 1.5rem;
+            box-shadow: 0 8px 16px rgba(0,40,0,0.1);
+            text-align: center;
+            transition: 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0,60,0,0.15);
+        }
+        .card .emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        .card h4 {
+            font-size: 1.6rem;
+            margin-bottom: 0.8rem;
+            color: #236b3e;
+        }
+        .card p {
+            color: #2f4d3a;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .video-card {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0,40,0,0.1);
+        }
+        .video-card iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+        .video-card .video-info {
+            padding: 1rem;
+        }
+        .video-card h4 {
+            font-size: 1.2rem;
+            color: #1f7a4c;
+        }
+        .cta {
+            background: #236b3e;
+            color: white;
+            text-align: center;
+            padding: 5rem 0;
+        }
+        .cta h3 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .cta .btn {
+            background: white;
+            color: #236b3e;
+        }
+        .cta .btn:hover {
+            background: #f0f9f0;
+        }
+        footer {
+            background: #1f3b2c;
+            color: #ddd;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            nav a {
+                margin: 0 1rem;
+            }
+            .hero h2 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>मखाना किसान सहायता</h1>
+            </div>
+            <nav>
+                <a href="#about">मखाना क्या है?</a>
+                <a href="#training">प्रशिक्षण</a>
+                <a href="#resources">संसाधन</a>
+                <a href="#videos">वीडियो</a>
+                <a href="form.html">किसान फॉर्म</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h2>मिथिलांचल में मखाना क्रांति</h2>
+            <p>मखाना (फॉक्स नट) अब सिर्फ त्योहारों तक सीमित नहीं – आधुनिक खेती, प्रसंस्करण और विपणन के जरिए किसानों की आय बढ़ाएँ। हम मुफ्त प्रशिक्षण और संसाधन उपलब्ध कराते हैं।</p>
+            <a href="form.html" class="btn">मखाना किसान बनें – फॉर्म भरें</a>
+        </div>
+    </section>
+
+    <section id="about" class="section">
+        <div class="container">
+            <h3>मखाना : मिथिलांचल का सुपरफूड</h3>
+            <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center;">
+                <div style="flex: 1; min-width: 280px;">
+                    <img src="https://images.unsplash.com/photo-1625047509168-a702ec0b4f4b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="मखाना का खेत" style="width: 100%; border-radius: 32px; box-shadow: 0 8px 16px rgba(0,40,0,0.2);">
+                </div>
+                <div style="flex: 2;">
+                    <p style="font-size: 1.2rem; margin-bottom: 1rem;">मखाना (गोरगन नट) मिथिलांचल के तालाबों में उगाया जाने वाला एक पारंपरिक सुपरफूड है। यह प्रोटीन, फाइबर और एंटीऑक्सीडेंट से भरपूर होता है। हमारा संगठन किसानों को उन्नत किस्म के बीज, जैविक खेती के तरीके और सरकारी योजनाओं से जोड़ता है।</p>
+                    <ul style="list-style: none; font-size: 1.1rem;">
+                        <li>✓ उच्च मांग और मुनाफा</li>
+                        <li>✓ कम लागत, अधिक उपज</li>
+                        <li>✓ जल संरक्षण के साथ खेती</li>
+                        <li>✓ महिला सशक्तिकरण (मखाना पॉपिंग का काम)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="training" class="section" style="background: #e5f5e5;">
+        <div class="container">
+            <h3>मखाना प्रशिक्षण कार्यक्रम</h3>
+            <div class="cards">
+                <div class="card">
+                    <div class="emoji">🌱</div>
+                    <h4>बीज से फसल तक</h4>
+                    <p>मखाना की खेती की पूरी प्रक्रिया – बीज चयन, तालाब तैयार करना, रोपाई, सिंचाई, खरपतवार नियंत्रण।</p>
+                </div>
+                <div class="card">
+                    <div class="emoji">🔥</div>
+                    <h4>प्रसंस्करण एवं पॉपिंग</h4>
+                    <p>मखाना को भूनने, पॉप करने और ग्रेडिंग की आधुनिक तकनीक। गुणवत्ता बढ़ाने के टिप्स।</p>
+                </div>
+                <div class="card">
+                    <div class="emoji">💰</div>
+                    <h4>विपणन एवं ब्रांडिंग</h4>
+                    <p>मखाना की ऑनलाइन बिक्री, सरकारी मंडियों में पंजीकरण, मूल्य निर्धारण रणनीति।</p>
+                </div>
+                <div class="card">
+                    <div class="emoji">📋</div>
+                    <h4>सरकारी योजनाएँ</h4>
+                    <p>मखाना बोर्ड, PMFME योजना, किसान क्रेडिट कार्ड, सब्सिडी की जानकारी।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="resources" class="section">
+        <div class="container">
+            <h3>मुफ्त संसाधन</h3>
+            <div class="cards">
+                <div class="card">
+                    <div class="emoji">📘</div>
+                    <h4>मखाना खेती गाइड</h4>
+                    <p>हिंदी में चरणबद्ध मार्गदर्शिका (पीडीएफ) – डाउनलोड करें मुफ्त।</p>
+                </div>
+                <div class="card">
+                    <div class="emoji">📊</div>
+                    <h4>लागत-लाभ विश्लेषण</h4>
+                    <p>एक एकड़ मखाना की खेती का अनुमानित खर्च और आय का विवरण।</p>
+                </div>
+                <div class="card">
+                    <div class="emoji">🗺️</div>
+                    <h4>जिला-वार संसाधन मानचित्र</h4>
+                    <p>दरभंगा, मधुबनी, सीतामढ़ी, मुजफ्फरपुर आदि में उपलब्ध संसाधन।</p>
+                </div>
+                <div class="card">
+                    <div class="emoji">📱</div>
+                    <h4>मखाना ऐप (जल्द)</h4>
+                    <p>मौसम, बाजार भाव, तकनीकी सलाह – एक क्लिक पर।</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="videos" class="section" style="background: #e5f5e5;">
+        <div class="container">
+            <h3>प्रशिक्षण वीडियो (डेमो)</h3>
+            <div class="video-grid">
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="मखाना की खेती - भाग 1" allowfullscreen></iframe>
+                    <div class="video-info">
+                        <h4>मखाना की खेती - तालाब तैयार करना</h4>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="मखाना की खेती - भाग 2" allowfullscreen></iframe>
+                    <div class="video-info">
+                        <h4>बीज बोने से अंकुरण तक</h4>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="मखाना प्रसंस्करण" allowfullscreen></iframe>
+                    <div class="video-info">
+                        <h4>मखाना पॉपिंग और ग्रेडिंग</h4>
+                    </div>
+                </div>
+            </div>
+            <p style="text-align: center; margin-top: 2rem;">सभी वीडियो देखने के लिए हमारे YouTube चैनल से जुड़ें।</p>
+        </div>
+    </section>
+
+    <section class="cta">
+        <div class="container">
+            <h3>क्या आप मखाना किसान बनना चाहते हैं?</h3>
+            <p style="font-size: 1.3rem; margin-bottom: 2rem;">हमसे जुड़ें और मुफ्त प्रशिक्षण, संसाधन और सरकारी सहायता प्राप्त करें।</p>
+            <a href="form.html" class="btn">मखाना किसान फॉर्म भरें</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>© 2026 मखाना किसान सहायता संस्था | मिथिलांचल, बिहार</p>
+            <p>संपर्क: info@makhanahelp.org | फोन: +91 98765 43210</p>
+        </div>
+    </footer>
+</body>
+</html>
