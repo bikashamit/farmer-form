@@ -624,6 +624,764 @@
     // ========== सबमिट ==========
     const submitBtn = document.getElementById('submitForm');
     const statusDiv = document.getElementById('formStatus');
+    const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbxNazk4dhR3nf0F7yiTaQBEWj-n3VmsYPIUugn0tc1XCWVbs8DEZr54SZ-a3oTiVoQiWA/exec';
+
+    function validateVisibleFields() {
+        const errors = [];
+
+        // पहचान
+        if (hasIdYes.checked) {
+            if (!document.getElementById('farmer_id').value.trim()) errors.push('कृपया किसान आईडी भरें।');
+        } else {
+            if (!document.getElementById('aadhaar_no').value.trim()) errors.push('कृपया आधार नंबर भरें।');
+        }
+        // मोबाइल — हमेशा आवश्यक
+        if (!document.getElementById('mobile_no').value.trim())      errors.push('कृपया मोबाइल नंबर भरें।');
+        if (!document.getElementById('mobile_confirm').value.trim()) errors.push('कृपया मोबाइल नंबर की पुष्टि करें।');
+        const m1 = document.getElementById('mobile_no').value.trim();
+        const m2 = document.getElementById('mobile_confirm').value.trim();
+        if (m1 && m2 && m1 !== m2) errors.push('मोबाइल नंबर मेल नहीं खाते। कृपया दोबारा जाँच करें।');
+
+        // किसान का नाम
+        if (!document.getElementById("farmer_name").value.trim()) errors.push("कृपया किसान का नाम भरें।");
+
+        // जलभूमि
+        const katha = document.getElementById('waterland_katha').value.trim();
+        if (!katha || parseFloat(katha) <= 0) errors.push('कृपया जलभूमि का क्षेत्रफल (कठा में) भरें।');
+
+        // अनुभव वर्ष
+        if (makhanaExpYes.checked) {
+            const yrs = document.getElementById('makhana_exp_years').value.trim();
+            if (!yrs || parseInt(yrs) <= 0) errors.push('कृपया अनुभव के वर्ष भरें।');
+        }
+
+        // मखाना सहायता चेकबॉक्स
+        const helpChecked = document.querySelectorAll('input[name="makhana_help[]"]:checked');
+        if (helpChecked.length === 0 && !makhanaHelpOtherCheck.checked)
+            errors.push('कृपया कम से कम एक सहायता का प्रकार चुनें।');
+
+        // अन्य सहायता टेक्स्ट
+        if (makhanaHelpOtherCheck.checked && !document.getElementById('makhana_help_other_text').value.trim())
+            errors.push('कृपया अन्य सहायता का विवरण भरें।');
+
+        // चुनौतियाँ
+        const challChecked = document.querySelectorAll('input[name="challenges[]"]:checked');
+        if (challChecked.length === 0 && !challengeOtherCheck.checked)
+            errors.push('कृपया कम से कम एक चुनौती चुनें।');
+
+        if (challengeOtherCheck.checked && !document.getElementById('challenge_other_text').value.trim())
+            errors.push('कृपया अन्य समस्या का विवरण भरें।');
+
+        // पता
+        errors.push(...window.validateAddress());
+
+        return errors;
+    }
+
+    submitBtn.addEventListener('click', async function() {
+        submitBtn.disabled = true;
+        const originalText = submitBtn.textContent;
+        submitBtn.textContent = '⏳ जाँच हो रही है...';
+        statusDiv.innerHTML = '';
+
+        const validationErrors = validateVisibleFields();
+        if (validationErrors.length > 0) {
+            statusDiv.innerHTML = `<div class="validation-error">❌ कृपया सभी आवश्यक फील्ड भरें:<br>${validationErrors.join('<br>')}</div>`;
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+            return;
+        }
+
+        submitBtn.textContent = '⏳ भेजा जा रहा है...';
+        const form = document.getElementById('farmerForm');
+
+        // Build flat key=value payload — Google Apps Script reads this reliably
+        const d = {};
+        d.has_id          = document.querySelector('input[name="has_id"]:checked')?.value || '';
+        d.farmer_id       = document.getElementById('farmer_id').value.trim();
+        d.aadhaar_no      = document.getElementById('aadhaar_no').value.trim();
+        d.mobile_no       = document.getElementById('mobile_no').value.trim();
+        d.mobile_confirm  = document.getElementById('mobile_confirm').value.trim();
+        d.farmer_name     = document.getElementById('farmer_name').value.trim();
+        d.state           = document.getElementById('state').value;
+        d.district        = document.getElementById('district').value;
+        d.block           = document.getElementById('block').value;
+        d.house_detail    = document.getElementById('house_detail').value.trim();
+        d.makhana_experience = document.querySelector('input[name="makhana_experience"]:checked')?.value || '';
+        d.makhana_exp_years  = document.getElementById('makhana_exp_years').value.trim();
+        d.waterland_katha    = document.getElementById('waterland_katha').value.trim();
+        // checkboxes — join as comma-separated
+        d.makhana_help    = Array.from(document.querySelectorAll('input[name="makhana_help[]"]:checked')).map(c=>c.value).join(' | ');
+        d.makhana_help_other = document.getElementById('makhana_help_other_text').value.trim();
+        d.challenges      = Array.from(document.querySelectorAll('input[name="challenges[]"]:checked')).map(c=>c.value).join(' | ');
+        d.challenge_other = document.getElementById('challenge_other_text').value.trim();
+
+        // Send as URL-encoded — Apps Script e.parameter reads this perfectly
+        const body = Object.entries(d).map(([k,v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
+
+        try {
+            const response = await fetch(WEBHOOK_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: body
+            });
+            let result = {};
+            const ct = response.headers.get('content-type');
+            if (ct && ct.includes('application/json')) result = await response.json();
+            else result.message = await response.text();
+
+            if (response.ok) {
+                statusDiv.innerHTML = '<div class="success-message">✅ डेटा सफलतापूर्वक सहेजा गया! अब आप अगले किसान के लिए फॉर्म भर सकते हैं।</div>';
+                form.reset();
+                document.getElementById('has_id_no').checked = true;
+                toggleIdAadhaar();
+                document.getElementById('makhana_exp_no').checked = true;
+                toggleMakhanaExp();
+                toggleOther(makhanaHelpOtherCheck, makhanaHelpOtherRow);
+                toggleOther(challengeOtherCheck, challengeOtherRow);
+window.resetAddress();
+            } else {
+                statusDiv.innerHTML = `<div class="error-message">❌ त्रुटि: ${result.message || 'कुछ गलत हो गया'}</div>`;
+            }
+        } catch (error) {
+            statusDiv.innerHTML = `<div class="error-message">❌ नेटवर्क त्रुटि: ${error.message}</div>`;
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    });
+
+})();
+
+
+</script>
+</body>
+</html><!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>किसान फॉर्म </title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Nirmala UI', 'Hindi', system-ui, sans-serif;
+        }
+        body {
+            background: #def1d8;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+        }
+        .form-container {
+            max-width: 950px;
+            width: 100%;
+            background: white;
+            padding: 2rem 2rem 2.5rem;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px -8px #1f4a2b;
+            border: 1px solid #b8dcb0;
+        }
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #1c5227;
+            margin: 0 0 0.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h1::before {
+            content: "🌸🎍";
+            font-size: 2.2rem;
+        }
+        .subhead {
+            color: #1f6e44;
+            border-left: 5px solid #5b8c5a;
+            padding-left: 1.2rem;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            font-weight: 400;
+        }
+        fieldset {
+            border: 1px solid #b6d9ac;
+            border-radius: 28px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            background: #f8fff6;
+        }
+        legend {
+            background: #236b3e;
+            color: white;
+            padding: 0.4rem 1.6rem;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 1.3rem;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,40,0,0.2);
+        }
+        .section-label {
+            font-weight: 600;
+            color: #1e422a;
+            font-size: 1.2rem;
+            margin: 0 0 1rem 0;
+            border-bottom: 2px dotted #a6cf9e;
+            padding-bottom: 0.3rem;
+        }
+        .checkbox-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
+            margin-bottom: 1.2rem;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            min-width: 160px;
+            background: #ecfbea;
+            padding: 0.4rem 1rem 0.4rem 0.8rem;
+            border-radius: 40px;
+            border: 1px solid #a9d2a1;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 1.2rem;
+            height: 1.2rem;
+            accent-color: #1e7e4a;
+            margin-right: 0.2rem;
+        }
+        .other-row {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-top: 0.8rem;
+            margin-left: 0.5rem;
+        }
+        .other-row input[type="text"],
+        .other-row input[type="tel"],
+        .other-row input[type="number"] {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #98ba90;
+            border-radius: 40px;
+            font-size: 1rem;
+            width: 280px;
+            max-width: 100%;
+            background: white;
+        }
+        .other-row input[type="text"]:focus,
+        .other-row input[type="tel"]:focus,
+        .other-row input[type="number"]:focus {
+            border-color: #1d7a41;
+            outline: 2px solid #b1e0b9;
+        }
+        .inline-hint {
+            color: #1d5730;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 1rem 0 0.4rem;
+        }
+        .radio-group {
+            margin: 0.8rem 0 1rem 0;
+        }
+        .radio-option {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 2.2rem;
+            background: #e9f3e6;
+            padding: 0.3rem 1.2rem;
+            border-radius: 40px;
+            font-size: 1.05rem;
+        }
+        .radio-option input[type="radio"] {
+            margin-right: 0.5rem;
+            accent-color: #1d7a41;
+            width: 1.1rem;
+            height: 1.1rem;
+        }
+        .help-type-group {
+            background: #e1f5e1;
+            padding: 1.2rem 1.8rem;
+            border-radius: 32px;
+            margin: 0.5rem 0 0.5rem 1.2rem;
+            border-left: 5px solid #328f4e;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2.5rem;
+        }
+        .hidden {
+            display: none;
+        }
+        .button {
+            background: #1f7a4c;
+            color: white;
+            border: none;
+            font-size: 1.4rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 60px;
+            width: 100%;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 4px 12px #236b3e;
+            border: 1px solid #166b3b;
+            letter-spacing: 1px;
+        }
+        .button:hover {
+            background: #0e5a32;
+            transform: scale(1.01);
+        }
+        .button:disabled {
+            background: #7fa885;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        .note {
+            text-align: center;
+            color: #3d6e47;
+            margin-top: 1.2rem;
+            font-size: 0.95rem;
+        }
+        hr {
+            border: 1px solid #c4e0be;
+            margin: 1.2rem 0;
+        }
+        .challenge-box {
+            background: #fff5e6;
+            border-radius: 28px;
+            padding: 1.2rem 1.8rem;
+            border: 1px solid #e0cdaa;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+        .validation-error {
+            background: #fff3cd;
+            color: #856404;
+            border-radius: 50px;
+            padding: 0.8rem 1.5rem;
+            margin-top: 1rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* ===== पता ड्रॉपडाउन स्टाइल ===== */
+        .address-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            width: 100%;
+        }
+        .address-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        .address-row label {
+            min-width: 100px;
+            font-weight: 500;
+            color: #1e422a;
+        }
+        .address-row select,
+        .address-row input {
+            flex: 1;
+            min-width: 250px;
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #98ba90;
+            border-radius: 40px;
+            font-size: 1rem;
+            background: white;
+        }
+        .address-row select:focus,
+        .address-row input:focus {
+            border-color: #1d7a41;
+            outline: 2px solid #b1e0b9;
+        }
+        .address-row select:disabled {
+            background: #f0f0f0;
+            color: #aaa;
+            cursor: not-allowed;
+        }
+        .addr-hint {
+            font-size: 0.82rem;
+            margin-top: 0.1rem;
+            margin-left: 110px;
+            min-height: 1rem;
+            color: #2e7d4f;
+        }
+        .addr-hint.loading { color: #d4820a; }
+        .addr-hint.error   { color: #b00020; }
+
+        /* ===== मखाना खेत क्षेत्र इनपुट ===== */
+        .katha-input-row {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            margin: 0.5rem 0 1rem 0.5rem;
+        }
+        .katha-input-row label {
+            font-weight: 500;
+            color: #1e422a;
+            font-size: 1rem;
+        }
+        .katha-input-row input[type="number"] {
+            padding: 0.6rem 1.2rem;
+            border: 1px solid #98ba90;
+            border-radius: 40px;
+            font-size: 1rem;
+            width: 160px;
+            background: white;
+        }
+        .katha-input-row input[type="number"]:focus {
+            border-color: #1d7a41;
+            outline: 2px solid #b1e0b9;
+        }
+        .katha-unit {
+            font-size: 0.95rem;
+            color: #3d6e47;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h1>मखाना किसान सहायता डेटाबेस</h1>
+    <div class="subhead">बिहार · झारखंड · उत्तर प्रदेश · पश्चिम बंगाल </div>
+
+    <form id="farmerForm">
+
+        <!-- ========== किसान पहचान ========== -->
+        <fieldset>
+            <legend>🆔 किसान पहचान</legend>
+            <div class="section-label">क्या किसान के पास आधिकारिक किसान आईडी है?</div>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="has_id" value="yes" id="has_id_yes"> हाँ, किसान आईडी है</label>
+                <label class="radio-option"><input type="radio" name="has_id" value="no" id="has_id_no" checked> नहीं, आधार नंबर दें</label>
+            </div>
+            <div id="farmer_id_block" class="other-row hidden">
+                <label for="farmer_id">किसान आईडी (अगर उपलब्ध हो):</label>
+                <input type="text" id="farmer_id" name="farmer_id" class="text-input" placeholder="उदा. BR12345">
+            </div>
+            <div id="aadhaar_block" class="other-row" style="flex-direction: column; align-items: stretch; gap: 0.8rem;">
+                <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <label for="aadhaar_no">आधार नंबर:</label>
+                    <input type="text" id="aadhaar_no" name="aadhaar_no" class="text-input" placeholder="12 अंकों का आधार नंबर" style="width: 280px;">
+                </div>
+            </div>
+            <!-- मोबाइल नंबर — हमेशा दिखे -->
+            <div class="other-row" style="flex-direction: column; align-items: stretch; gap: 0.8rem; margin-top: 0.8rem;">
+                <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <label for="mobile_no">मोबाइल नंबर:</label>
+                    <input type="tel" id="mobile_no" name="mobile_no" class="text-input" placeholder="10 अंकों का मोबाइल नंबर" style="width: 280px;">
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <label for="mobile_confirm">मोबाइल नंबर पुनः दर्ज करें:</label>
+                    <input type="tel" id="mobile_confirm" name="mobile_confirm" class="text-input" placeholder="मोबाइल नंबर दोबारा लिखें" style="width: 280px;">
+                </div>
+            </div>
+        </fieldset>
+
+        <!-- ========== पता ========== -->
+        <fieldset>
+            <legend>🏠 पता</legend>
+            <div class="address-container">
+
+                <!-- किसान का नाम -->
+                <div class="address-row">
+                    <label for="farmer_name">किसान का नाम:</label>
+                    <input type="text" id="farmer_name" name="farmer_name" placeholder="पूरा नाम लिखें" required>
+                </div>
+
+                <!-- राज्य -->
+                <div class="address-row">
+                    <label for="state">राज्य:</label>
+                    <select id="state" name="state" required>
+                        <option value="">-- राज्य चुनें --</option>
+                        <option value="बिहार">बिहार</option>
+                        <option value="झारखंड">झारखंड</option>
+                        <option value="उत्तर प्रदेश">उत्तर प्रदेश</option>
+                        <option value="पश्चिम बंगाल">पश्चिम बंगाल</option>
+                    </select>
+                </div>
+                <div class="addr-hint" id="state-hint"></div>
+
+                <!-- ज़िला -->
+                <div class="address-row">
+                    <label for="district">ज़िला:</label>
+                    <select id="district" name="district" required disabled>
+                        <option value="">-- पहले राज्य चुनें --</option>
+                    </select>
+                </div>
+                <div class="addr-hint" id="district-hint"></div>
+
+                <!-- प्रखंड -->
+                <div class="address-row">
+                    <label for="block">प्रखंड / ब्लॉक:</label>
+                    <select id="block" name="block" required disabled>
+                        <option value="">-- पहले ज़िला चुनें --</option>
+                    </select>
+                </div>
+                <div class="addr-hint" id="block-hint"></div>
+
+                <!-- गाँव -->
+                <div class="address-row">
+                    <label for="house_detail">गाँव:</label>
+                    <input type="text" id="house_detail" name="house_detail" placeholder="गाँव का नाम लिखें" required>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <!-- ========== मखाना की खेती ========== -->
+        <fieldset>
+            <legend>🌸 मखाना की खेती</legend>
+
+            <!-- पूर्व अनुभव -->
+            <div class="section-label">▶ क्या पहले से मखाना की खेती का अनुभव है?</div>
+            <div class="radio-group">
+                <label class="radio-option"><input type="radio" name="makhana_experience" value="yes" id="makhana_exp_yes"> हाँ</label>
+                <label class="radio-option"><input type="radio" name="makhana_experience" value="no" id="makhana_exp_no" checked> नहीं</label>
+            </div>
+            <div id="makhana_exp_years_block" class="other-row hidden">
+                <label for="makhana_exp_years">कितने वर्ष?</label>
+                <input type="number" id="makhana_exp_years" name="makhana_exp_years" placeholder="वर्ष" min="1" max="60" style="width:140px;">
+                <span class="katha-unit">वर्ष</span>
+            </div>
+
+            <hr>
+
+            <!-- जलभूमि -->
+            <div class="section-label">▶ कितनी जलभूमि है?</div>
+            <div class="katha-input-row">
+                <label for="waterland_katha">क्षेत्रफल:</label>
+                <input type="number" id="waterland_katha" name="waterland_katha" placeholder="कठा" min="0" step="0.5" required>
+                <span class="katha-unit">कठा</span>
+            </div>
+
+            <hr>
+
+            <!-- सहायता -->
+            <div class="section-label">▶ किस चीज़ की ज़रूरत है? (कम से कम एक चुनें)</div>
+            <div class="checkbox-grid" id="makhanaHelpGroup">
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Seed"> 🌱 बीज</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Fertilizer"> 🧪 खाद / उर्वरक</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Water Pump"> 💧 वाटर पम्प</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Floating Device"> 🚣 फ्लोटिंग डिवाइस</label>
+                <label class="checkbox-item"><input type="checkbox" name="makhana_help[]" value="Training"> 📘 प्रशिक्षण</label>
+                <label class="checkbox-item"><input type="checkbox" id="makhana_help_other_check" value="Other"> अन्य</label>
+            </div>
+            <div id="makhana_help_other_row" class="other-row hidden">
+                <label for="makhana_help_other_text">अन्य क्या चाहिए?</label>
+                <input type="text" id="makhana_help_other_text" name="makhana_help_other" placeholder="उदा. भंडारण सुविधा">
+            </div>
+
+        </fieldset>
+
+        <!-- ========== चुनौतियाँ ========== -->
+        <fieldset class="challenge-box">
+            <legend>⚠️ वर्तमान चुनौतियाँ</legend>
+            <div class="section-label">▶ किसान को किन समस्याओं का सामना है? (कम से कम एक चुनें)</div>
+            <div class="checkbox-grid">
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="बीज की कमी"> 🌱 बीज की कमी</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="पानी की कमी"> 💧 पानी की कमी</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उर्वरक की कमी"> 🧪 उर्वरक की कमी</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उपकरण नहीं हैं"> 🔧 उपकरण नहीं हैं</label>
+                <label class="checkbox-item"><input type="checkbox" name="challenges[]" value="उचित दाम नहीं मिलता"> 💰 उचित दाम नहीं मिलता</label>
+                <label class="checkbox-item"><input type="checkbox" id="challenge_other_check" value="अन्य"> अन्य</label>
+            </div>
+            <div id="challenge_other_row" class="other-row hidden">
+                <label for="challenge_other_text">अन्य समस्या:</label>
+                <input type="text" id="challenge_other_text" name="challenge_other" placeholder="जैसे बाढ़, कर्ज">
+            </div>
+        </fieldset>
+
+        <hr>
+        <button type="button" class="button" id="submitForm">📋 किसान जानकारी सबमिट करें</button>
+        <div id="formStatus" class="note"></div>
+    </form>
+</div>
+
+<script>
+(function(){
+
+    const DATA_BASE_URL = 'https://raw.githubusercontent.com/bikashamit/address-data/main/data';
+
+    function safe(name) {
+        return name.replace(/[^\w\u0900-\u097F]+/g, '_').replace(/^_+|_+$/g, '');
+    }
+
+    async function loadJSON(url) {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + url);
+        return res.json();
+    }
+
+    function setHint(id, msg, type) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = msg;
+        el.className = 'addr-hint' + (type ? ' ' + type : '');
+    }
+
+    function resetBelow(level) {
+        if (level === 'state' || level === 'district') {
+            const b = document.getElementById('block');
+            b.innerHTML = '<option value="">-- पहले ज़िला चुनें --</option>';
+            b.disabled = true;
+            setHint('block-hint', '');
+        }
+        if (level === 'state') {
+            const d = document.getElementById('district');
+            d.innerHTML = '<option value="">-- पहले राज्य चुनें --</option>';
+            d.disabled = true;
+            setHint('district-hint', '');
+        }
+    }
+
+    document.getElementById('state').addEventListener('change', async function() {
+        resetBelow('state');
+        const state = this.value;
+        if (!state) return;
+        const distSel = document.getElementById('district');
+        try {
+            setHint('district-hint', '⏳ ज़िले लोड हो रहे हैं...', 'loading');
+            const url = `${DATA_BASE_URL}/districts/${safe(state)}.json`;
+            const districts = await loadJSON(url);
+            distSel.innerHTML = '<option value="">-- ज़िला चुनें --</option>';
+            districts.forEach(d => {
+                const o = document.createElement('option');
+                o.value = o.textContent = d;
+                distSel.appendChild(o);
+            });
+            distSel.disabled = false;
+            setHint('district-hint', `${districts.length} ज़िले उपलब्ध`);
+        } catch(e) {
+            setHint('district-hint', '⚠️ ज़िले लोड नहीं हुए। GitHub URL जाँचें।', 'error');
+            console.error(e);
+        }
+    });
+
+    document.getElementById('district').addEventListener('change', async function() {
+        resetBelow('district');
+        const state    = document.getElementById('state').value;
+        const district = this.value;
+        if (!district) return;
+        const blockSel = document.getElementById('block');
+        try {
+            setHint('block-hint', '⏳ प्रखंड लोड हो रहे हैं...', 'loading');
+            const url = `${DATA_BASE_URL}/blocks/${safe(state)}__${safe(district)}.json`;
+            const blocks = await loadJSON(url);
+            blockSel.innerHTML = '<option value="">-- प्रखंड चुनें --</option>';
+            blocks.forEach(b => {
+                const o = document.createElement('option');
+                o.value = o.textContent = b;
+                blockSel.appendChild(o);
+            });
+            blockSel.disabled = false;
+            setHint('block-hint', `${blocks.length} प्रखंड`);
+        } catch(e) {
+            setHint('block-hint', '⚠️ प्रखंड लोड नहीं हुए।', 'error');
+            console.error(e);
+        }
+    });
+
+
+    window.validateAddress = function() {
+        const errors = [];
+        if (!document.getElementById('state').value)       errors.push('कृपया राज्य चुनें।');
+        if (!document.getElementById('district').value)    errors.push('कृपया ज़िला चुनें।');
+        if (!document.getElementById('block').value)       errors.push('कृपया प्रखंड चुनें।');
+        if (!document.getElementById('house_detail').value.trim()) errors.push('कृपया गाँव का नाम भरें।');
+        return errors;
+    };
+
+    window.resetAddress = function() {
+        document.getElementById('state').value = '';
+        resetBelow('state');
+    };
+
+    // =======================================================================
+    // पहचान टॉगल
+    // =======================================================================
+    const hasIdYes = document.getElementById('has_id_yes');
+    const hasIdNo  = document.getElementById('has_id_no');
+    const farmerIdBlock = document.getElementById('farmer_id_block');
+    const aadhaarBlock  = document.getElementById('aadhaar_block');
+
+    function toggleIdAadhaar() {
+        if (hasIdYes.checked) {
+            farmerIdBlock.classList.remove('hidden');
+            aadhaarBlock.classList.add('hidden');
+            document.getElementById('aadhaar_no').value = '';
+        } else {
+            farmerIdBlock.classList.add('hidden');
+            aadhaarBlock.classList.remove('hidden');
+            document.getElementById('farmer_id').value = '';
+        }
+    }
+    hasIdYes.addEventListener('change', toggleIdAadhaar);
+    hasIdNo.addEventListener('change', toggleIdAadhaar);
+    toggleIdAadhaar();
+
+    // =======================================================================
+    // मखाना अनुभव टॉगल
+    // =======================================================================
+    const makhanaExpYes = document.getElementById('makhana_exp_yes');
+    const makhanaExpNo  = document.getElementById('makhana_exp_no');
+    const makhanaExpYearsBlock = document.getElementById('makhana_exp_years_block');
+
+    function toggleMakhanaExp() {
+        makhanaExpYearsBlock.classList.toggle('hidden', !makhanaExpYes.checked);
+        if (!makhanaExpYes.checked) document.getElementById('makhana_exp_years').value = '';
+    }
+    makhanaExpYes.addEventListener('change', toggleMakhanaExp);
+    makhanaExpNo.addEventListener('change', toggleMakhanaExp);
+    toggleMakhanaExp();
+
+    // =======================================================================
+    // अन्य फील्ड टॉगल
+    // =======================================================================
+    const makhanaHelpOtherCheck = document.getElementById('makhana_help_other_check');
+    const makhanaHelpOtherRow   = document.getElementById('makhana_help_other_row');
+    const challengeOtherCheck   = document.getElementById('challenge_other_check');
+    const challengeOtherRow     = document.getElementById('challenge_other_row');
+
+    function toggleOther(checkbox, row) {
+        row.classList.toggle('hidden', !checkbox.checked);
+        if (!checkbox.checked) {
+            const t = row.querySelector('input[type="text"]');
+            if (t) t.value = '';
+        }
+    }
+    makhanaHelpOtherCheck.addEventListener('change', () => toggleOther(makhanaHelpOtherCheck, makhanaHelpOtherRow));
+    challengeOtherCheck.addEventListener('change',   () => toggleOther(challengeOtherCheck, challengeOtherRow));
+    makhanaHelpOtherRow.classList.add('hidden');
+    challengeOtherRow.classList.add('hidden');
+
+
+    // ========== सबमिट ==========
+    const submitBtn = document.getElementById('submitForm');
+    const statusDiv = document.getElementById('formStatus');
     const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbykU9W4S3UhnHDdDYHSh4USYhuP6jO_2Sptos_TT5dRHxyUDGTem0PkT8Tr14uoNNORug/exec';
 
     function validateVisibleFields() {
