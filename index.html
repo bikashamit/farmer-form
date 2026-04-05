@@ -36,13 +36,6 @@
         nav a.cta-nav { background: var(--gold); color: var(--green-dark); font-weight: 700; }
         nav a.cta-nav:hover { background: #e8a030; }
 
-        /* ── VISITOR COUNTER ── */
-        .visitor-btn { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 50px; padding: 0.5rem 1.2rem; white-space: nowrap; flex-shrink: 0; }
-        .pulse-dot { width: 9px; height: 9px; background: #4ade80; border-radius: 50%; flex-shrink: 0; animation: pulse-dot 1.8s infinite; }
-        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(74,222,128,0.5)} 50%{opacity:.8;transform:scale(1.3);box-shadow:0 0 0 6px rgba(74,222,128,0)} }
-        .v-count { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 700; color: var(--gold-light); min-width: 44px; }
-        .v-label { font-size: 0.7rem; color: #a8d4b8; line-height: 1.2; }
-
         /* ── WARNING TICKER ── */
         .warning-ticker { background: var(--red-warn); color: white; overflow: hidden; white-space: nowrap; height: 36px; display: flex; align-items: center; }
         .ticker-label { background: #922b21; font-weight: 700; font-size: 0.8rem; padding: 0 1.2rem; height: 100%; display: flex; align-items: center; gap: 6px; flex-shrink: 0; border-right: 2px solid rgba(255,255,255,0.25); letter-spacing: 0.5px; }
@@ -128,8 +121,15 @@
         .contact-item a:hover { text-decoration:underline; }
         .footer-bottom { max-width:1100px; margin:1.5rem auto 0; text-align:center; font-size:.78rem; color:#4a6a55; }
 
+        /* ── VISITOR COUNTER IN FOOTER ── */
+        .visitor-footer { display:flex; align-items:center; gap:8px; margin-top:1rem; background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.15); border-radius:50px; padding:.45rem 1.1rem; width:fit-content; }
+        .pulse-dot { width:9px; height:9px; background:#4ade80; border-radius:50%; flex-shrink:0; animation:pulse-dot 1.8s infinite; }
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1);box-shadow:0 0 0 0 rgba(74,222,128,0.5)} 50%{opacity:.8;transform:scale(1.3);box-shadow:0 0 0 6px rgba(74,222,128,0)} }
+        .v-count { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:var(--gold-light); min-width:44px; }
+        .v-label { font-size:.7rem; color:#a8d4b8; line-height:1.2; }
+
         /* ── RESPONSIVE ── */
-        @media(max-width:900px) { .header-main{flex-direction:column;align-items:flex-start} .visitor-btn{align-self:flex-end} }
+        @media(max-width:900px) { .header-main{flex-direction:column;align-items:flex-start} }
         @media(max-width:768px) { .about-grid{grid-template-columns:1fr} .footer-grid{grid-template-columns:1fr;gap:2rem} .stat-item{padding:1rem 1.5rem;border-right:none;border-bottom:1px solid rgba(255,255,255,.1)} .about-list{grid-template-columns:1fr} }
     </style>
 </head>
@@ -141,25 +141,16 @@
     </div>
 
     <div class="header-main">
-        <!-- LEFT: Logo + Visitor Counter -->
+        <!-- Logo -->
         <div class="logo">
             <div class="logo-icon">🌰</div>
             <div class="logo-text">
                 <h1>R.K. Sahani Krishee Vigyaan Foundation</h1>
                 <p>मिथिलांचल में मखाना क्रांति — Benipatti, Madhubani, Bihar</p>
             </div>
-            <!-- Visitor counter logo के ठीक बगल में -->
-            <div class="visitor-btn" title="इस वेबसाइट पर अब तक आए कुल आगंतुक">
-                <div class="pulse-dot"></div>
-                <div>
-                    <div class="v-count" id="visitorCount">—</div>
-                    <div class="v-label">visitors count</div>
-                </div>
-                <span style="font-size:1rem;">👥</span>
-            </div>
         </div>
 
-        <!-- RIGHT: Nav -->
+        <!-- Nav -->
         <nav>
             <a href="#about">परिचय</a>
             <a href="#training">प्रशिक्षण</a>
@@ -288,7 +279,16 @@
             <p>मिथिलांचल के किसानों के लिए समर्पित — मखाना खेती, प्रसंस्करण और विपणन में मुफ्त सहायता।</p>
             <p class="cin">CIN: U88100BR2023NPL065702</p>
             <p style="margin-top:.4rem;font-size:.82rem;">Work: Social Work, Events, Cultural Programs etc.</p>
+
+            <!-- VISITOR COUNTER — moved here from header -->
+            <div class="visitor-footer" title="इस वेबसाइट पर अब तक आए कुल आगंतुक">
+                <div class="pulse-dot"></div>
+                <div class="v-count" id="visitorCount">...</div>
+                <div class="v-label">visitors</div>
+                <span style="font-size:1rem;">👥</span>
+            </div>
         </div>
+
         <div class="footer-col">
             <h5>त्वरित लिंक</h5>
             <a href="#about">परिचय</a>
@@ -297,6 +297,7 @@
             <a href="#videos">वीडियो</a>
             <a href="form.html">किसान फॉर्म</a>
         </div>
+
         <div class="footer-col">
             <h5>संपर्क करें</h5>
             <div class="contact-item"><span class="icon">📍</span><span>Vill- Balba Godam Tol Saharghat, Sahar, Benipatti, Madhubani, Bihar — 847308</span></div>
@@ -311,29 +312,26 @@
 </footer>
 
 <script>
-// ── REAL VISITOR COUNTER — CountAPI ──────────────────────────
-// हर visit server पर count होती है — सबको same real number दिखता है
+// ── VISITOR COUNTER — counterapi.dev (working, free) ──
 (function() {
-    const el = document.getElementById('visitorCount');
+    var el = document.getElementById('visitorCount');
     el.textContent = '...';
 
-    fetch('https://api.countapi.xyz/hit/bikashamit-farmer-form/visits')
-        .then(r => r.json())
-        .then(data => {
-            const count = data.value;
-            // Count-up animation
-            const start = Math.max(0, count - 60);
-            let current = start;
-            const steps = 35;
-            const inc = (count - start) / steps;
-            const timer = setInterval(() => {
+    fetch('https://api.counterapi.dev/v1/rksahani-foundation/visits/up')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            var count = data.count;
+            var start = Math.max(0, count - 60);
+            var current = start;
+            var steps = 35;
+            var inc = (count - start) / steps;
+            var timer = setInterval(function() {
                 current = Math.min(current + inc, count);
                 el.textContent = Math.round(current).toLocaleString('hi-IN');
                 if (current >= count) clearInterval(timer);
             }, 30);
         })
-        .catch(() => {
-            // API fail होने पर
+        .catch(function() {
             el.textContent = '—';
         });
 })();
